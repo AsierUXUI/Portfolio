@@ -930,6 +930,23 @@
   @keyframes zfl-next { 0%{transform:rotateY(0)} 100%{transform:rotateY(180deg)} }
   @keyframes zfl-prev { 0%{transform:rotateY(0)} 100%{transform:rotateY(-180deg)} }
 
+  /* page-flip depth shadow overlays */
+  .flip-shadow-ff {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2; opacity: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0) 20%, rgba(0,0,0,0.55) 100%);
+  }
+  .flip-shadow-fb {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2; opacity: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0) 20%, rgba(0,0,0,0.4) 100%);
+  }
+  .flip-anim .flip-shadow-ff { animation: flip-sh-ff var(--flip-dur, 0.6s) cubic-bezier(0.645,0.045,0.355,1) forwards; }
+  .flip-anim .flip-shadow-fb { animation: flip-sh-fb var(--flip-dur, 0.6s) cubic-bezier(0.645,0.045,0.355,1) forwards; }
+  @keyframes flip-sh-ff { 0%{opacity:0} 38%{opacity:1} 100%{opacity:0} }
+  @keyframes flip-sh-fb { 0%{opacity:0} 55%{opacity:0.85} 100%{opacity:0.05} }
+
+  /* cursor hint on draggable spreads */
+  #zine-spread, #amadis-spread, .fb-spread { cursor: pointer; }
+
   .zine-controls {
     display: flex;
     align-items: center;
@@ -2359,10 +2376,16 @@ function fbRunFlip(dir, nli, nri) {
   if (dir==="next") { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
   else { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
   function lf(face, pidx) { var fc=document.createElement("canvas"); face.appendChild(fc); if(pidx>=0&&pidx<fbTotal){var im=new Image();im.onload=function(){fc.width=im.width;fc.height=im.height;fc.style.width="100%";fc.getContext("2d").drawImage(im,0,0);};im.src=fbPages[pidx];} }
-  lf(ff,ti); lf(fb2,ii); fe.appendChild(ff); fe.appendChild(fb2);
+  lf(ff,ti); lf(fb2,ii);
+  var sff=document.createElement('div'); sff.className='flip-shadow-ff'; ff.appendChild(sff);
+  var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb2.appendChild(sfb);
+  fe.appendChild(ff); fe.appendChild(fb2);
+  fe.classList.add('flip-anim');
   fe.style.animation=(dir==="next"?"fb-fpf":"fb-fnf")+" 0.55s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
-    fe.removeEventListener("animationend",h); fe.style.display="none"; fe.style.animation="";
+    fe.removeEventListener("animationend",h);
+    fe.classList.remove('flip-anim');
+    fe.style.display="none"; fe.style.animation="";
     fbDrawPage("fb-cl",nli); fbDrawPage("fb-cr",nri);
     document.getElementById("fb-nl").textContent=nli<fbTotal?"p."+(nli+1):"";
     document.getElementById("fb-nr").textContent=nri<fbTotal?"p."+(nri+1):"";
@@ -2578,10 +2601,15 @@ function zineRunFlip(dir, nli, nri) {
       im.src = ZINE_PAGES[pidx];
     }
   }
-  lf(ff,ti); lf(fb,ii); fe.appendChild(ff); fe.appendChild(fb);
+  lf(ff,ti); lf(fb,ii);
+  var sff=document.createElement('div'); sff.className='flip-shadow-ff'; ff.appendChild(sff);
+  var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb.appendChild(sfb);
+  fe.appendChild(ff); fe.appendChild(fb);
+  fe.classList.add('flip-anim');
   fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
+    fe.classList.remove('flip-anim');
     fe.style.display="none"; fe.style.animation="";
     zineDrawPage("zine-cl",nli); zineDrawPage("zine-cr",nri);
     document.getElementById("zine-nl").textContent = nli<zineTotalPages ? "p."+(nli+1) : "";
@@ -2811,10 +2839,15 @@ function amadisRunFlip(dir, nli, nri) {
       im.src = AMADIS_PAGES[pidx];
     }
   }
-  lf(ff,ti); lf(fb,ii); fe.appendChild(ff); fe.appendChild(fb);
+  lf(ff,ti); lf(fb,ii);
+  var sff=document.createElement('div'); sff.className='flip-shadow-ff'; ff.appendChild(sff);
+  var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb.appendChild(sfb);
+  fe.appendChild(ff); fe.appendChild(fb);
+  fe.classList.add('flip-anim');
   fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
+    fe.classList.remove('flip-anim');
     fe.style.display="none"; fe.style.animation="";
     amadisDrawPage("amadis-cl",nli); amadisDrawPage("amadis-cr",nri);
     document.getElementById("amadis-nl").textContent = nli<amadisTotal ? "p."+(nli+1) : "";
@@ -3636,6 +3669,74 @@ document.addEventListener('dblclick', function() {
     _lbzApply();
   }, { passive: false });
   document.addEventListener('touchend', function() { lastDist = null; }, { passive: true });
+})();
+</script>
+
+<script>
+// ---- SPREAD CLICK / SWIPE TO FLIP ----
+(function() {
+  function addFlipInteraction(spreadEl, canNext, canPrev, doNext, doPrev) {
+    var startX = 0, startY = 0;
+    spreadEl.addEventListener('mousedown', function(e) {
+      startX = e.clientX; startY = e.clientY;
+    });
+    spreadEl.addEventListener('mouseup', function(e) {
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+        // click: use which half was clicked
+        var rect = spreadEl.getBoundingClientRect();
+        if ((e.clientX - rect.left) > rect.width / 2) { if (canNext()) doNext(); }
+        else { if (canPrev()) doPrev(); }
+        return;
+      }
+      // swipe / drag: horizontal gesture > 40px
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+        if (dx < 0 && canNext()) doNext();
+        else if (dx > 0 && canPrev()) doPrev();
+      }
+    });
+    spreadEl.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 1) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }
+    }, { passive: true });
+    spreadEl.addEventListener('touchend', function(e) {
+      if (e.changedTouches.length !== 1) return;
+      var dx = e.changedTouches[0].clientX - startX, dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+        var rect = spreadEl.getBoundingClientRect();
+        if ((e.changedTouches[0].clientX - rect.left) > rect.width / 2) { if (canNext()) doNext(); }
+        else { if (canPrev()) doPrev(); }
+        return;
+      }
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+        if (dx < 0 && canNext()) doNext();
+        else if (dx > 0 && canPrev()) doPrev();
+      }
+    }, { passive: true });
+  }
+
+  var zineSp = document.getElementById('zine-spread');
+  if (zineSp) addFlipInteraction(zineSp,
+    function() { return !zineFlipping && zineSpread + 2 < zineTotalPages; },
+    function() { return !zineFlipping && zineSpread > 0; },
+    function() { zineFlip(1); },
+    function() { zineFlip(-1); }
+  );
+
+  var amSp = document.getElementById('amadis-spread');
+  if (amSp) addFlipInteraction(amSp,
+    function() { return !amadisFlipping && amadisSpread + 2 < amadisTotal; },
+    function() { return !amadisFlipping && amadisSpread > 0; },
+    function() { amadisFlip(1); },
+    function() { amadisFlip(-1); }
+  );
+
+  var fbSp = document.getElementById('fb-spread');
+  if (fbSp) addFlipInteraction(fbSp,
+    function() { return !fbFlipping && fbSpread + 2 < fbTotal; },
+    function() { return !fbFlipping && fbSpread > 0; },
+    function() { fbNext(); },
+    function() { fbPrev(); }
+  );
 })();
 </script>
 </body>
