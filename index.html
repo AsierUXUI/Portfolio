@@ -1514,7 +1514,7 @@
 <header>
   <div class="header-bg"></div>
   <div class="header-glitch"></div>
-  <div class="site-title">ASIER<br>MORAIS</div>
+  <div class="site-title">ASIER<br>MOMA</div>
   <div class="site-subtitle">▸ PAINTER / ZINEMAKER / IDLER ◂</div>
 </header>
 
@@ -2371,8 +2371,8 @@ function fbRunFlip(dir, nli, nri) {
   fe.style.display="block"; fe.innerHTML=""; fe.style.width=(sw/2)+"px"; fe.style.height=sh+"px"; fe.style.top="0";
   var ff=document.createElement("div"); ff.className="fb-ff";
   var fb2=document.createElement("div"); fb2.className="fb-fb";
-  var ti = dir==="next" ? fbSpread+1 : fbSpread;
-  var ii = dir==="next" ? nri : nli;
+  var ti = dir==="next" ? fbSpread-1 : fbSpread+2;
+  var ii = dir==="next" ? nli : nri;
   if (dir==="next") { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
   else { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
   function lf(face, pidx) { var fc=document.createElement("canvas"); face.appendChild(fc); if(pidx>=0&&pidx<fbTotal){var im=new Image();im.onload=function(){fc.width=im.width;fc.height=im.height;fc.style.width="100%";fc.getContext("2d").drawImage(im,0,0);};im.src=fbPages[pidx];} }
@@ -2385,11 +2385,13 @@ function fbRunFlip(dir, nli, nri) {
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
-    fe.style.display="none"; fe.style.animation="";
-    fbDrawPage("fb-cl",nli); fbDrawPage("fb-cr",nri);
     document.getElementById("fb-nl").textContent=nli<fbTotal?"p."+(nli+1):"";
     document.getElementById("fb-nr").textContent=nri<fbTotal?"p."+(nri+1):"";
-    fbUpdateThumbs(); fbFlipping=false;
+    var pending=2;
+    var st=setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; },400);
+    function done(){ if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; } }
+    function dw(cid,idx){ var c=document.getElementById(cid); if(idx<0||idx>=fbTotal){c.style.display="none";done();return;} c.style.display="block"; var im=new Image(); im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();}; im.onerror=done; im.src=fbPages[idx]; }
+    dw("fb-cl",nli); dw("fb-cr",nri);
   });
 }
 
@@ -2589,8 +2591,9 @@ function zineRunFlip(dir, nli, nri) {
   fe.style.width = (sw/2)+"px"; fe.style.height = sh+"px"; fe.style.top = "0";
   var ff = document.createElement("div"); ff.className = "zfl-ff";
   var fb = document.createElement("div"); fb.className = "zfl-fb";
-  var ti = dir===1 ? zineSpread+1 : zineSpread;
-  var ii = dir===1 ? nri : nli;
+  // front = departing page, back = arriving page (physical book order)
+  var ti = dir===1 ? zineSpread-1 : zineSpread+2;
+  var ii = dir===1 ? nli : nri;
   if (dir===1) { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
   else         { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
   function lf(face, pidx) {
@@ -2610,11 +2613,19 @@ function zineRunFlip(dir, nli, nri) {
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
-    fe.style.display="none"; fe.style.animation="";
-    zineDrawPage("zine-cl",nli); zineDrawPage("zine-cr",nri);
     document.getElementById("zine-nl").textContent = nli<zineTotalPages ? "p."+(nli+1) : "";
     document.getElementById("zine-nr").textContent = nri<zineTotalPages ? "p."+(nri+1) : "";
-    zineUpdateThumbs(); zineFlipping=false;
+    var pending = 2;
+    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; }, 400);
+    function done() { if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; } }
+    function dw(cid, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=zineTotalPages){c.style.display="none";done();return;}
+      c.style.display="block"; var im=new Image();
+      im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();};
+      im.onerror=done; im.src=ZINE_PAGES[idx];
+    }
+    dw("zine-cl",nli); dw("zine-cr",nri);
   });
 }
 
@@ -2827,8 +2838,8 @@ function amadisRunFlip(dir, nli, nri) {
   fe.style.width = (sw/2)+"px"; fe.style.height = sh+"px"; fe.style.top = "0";
   var ff = document.createElement("div"); ff.className = "zfl-ff";
   var fb = document.createElement("div"); fb.className = "zfl-fb";
-  var ti = dir===1 ? amadisSpread+1 : amadisSpread;
-  var ii = dir===1 ? nri : nli;
+  var ti = dir===1 ? amadisSpread-1 : amadisSpread+2;
+  var ii = dir===1 ? nli : nri;
   if (dir===1) { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
   else         { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
   function lf(face, pidx) {
@@ -2848,11 +2859,19 @@ function amadisRunFlip(dir, nli, nri) {
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
-    fe.style.display="none"; fe.style.animation="";
-    amadisDrawPage("amadis-cl",nli); amadisDrawPage("amadis-cr",nri);
     document.getElementById("amadis-nl").textContent = nli<amadisTotal ? "p."+(nli+1) : "";
     document.getElementById("amadis-nr").textContent = nri<amadisTotal ? "p."+(nri+1) : "";
-    amadisUpdateThumbs(); amadisFlipping=false;
+    var pending = 2;
+    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; }, 400);
+    function done() { if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; } }
+    function dw(cid, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=amadisTotal){c.style.display="none";done();return;}
+      c.style.display="block"; var im=new Image();
+      im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();};
+      im.onerror=done; im.src=AMADIS_PAGES[idx];
+    }
+    dw("amadis-cl",nli); dw("amadis-cr",nri);
   });
 }
 
