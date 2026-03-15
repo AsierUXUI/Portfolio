@@ -1812,7 +1812,8 @@
   var trail = [];
   var lastRecorded = null;
   var analyseTimer = null;
-  var celebrated = false;
+  var celebrateCount = 0;   // how many times fired this session (max 3)
+  var celebrating   = false; // true while animation is playing
   document.addEventListener("mousemove", function(e) {
     if (typeof lbOpen !== "undefined" && lbOpen) return;
     var x = e.clientX;
@@ -1845,7 +1846,6 @@
     if (shouldRecord) {
       trail.push({ x: x, y: y, t: now });
       lastRecorded = { x: x, y: y };
-      celebrated = false;
     }
 
     var fresh = [];
@@ -1906,9 +1906,8 @@
   }
 
   function analyseShape() {
-    if (celebrated || trail.length < 40) return;
+    if (celebrating || celebrateCount >= 3 || trail.length < 60) return;
     var pts = trail;
-    var n = pts.length;
 
     // --- step 1: rotate so primary axis is vertical ---
     var angle = primaryAngle(pts);
@@ -1927,79 +1926,95 @@
       return { x: (p.x - minX) / W, y: (p.y - minY) / H };
     });
 
-    // --- step 3: score ---
+    // --- step 3: score (need 8/8 — must be a deliberate outline) ---
     var score = 0;
 
-    // Must be taller than wide (aspect > 1.8, stricter than before)
+    // 1. Must be notably taller than wide
     var aspect = H / W;
-    if (aspect > 1.8) score += 1;
+    if (aspect > 2.0) score += 1;
 
-    // Tip region (top 25%) must be notably narrower than base (bottom 35%)
+    // 2. Tip region (top 25%) vs base (bottom 35%) widths
     var tipPts  = norm.filter(function(p){ return p.y < 0.25; });
     var basePts = norm.filter(function(p){ return p.y > 0.65; });
-    if (tipPts.length < 4 || basePts.length < 4) return;
+    if (tipPts.length < 5 || basePts.length < 5) return;
 
     var tipW  = Math.max.apply(null, tipPts.map(function(p){return p.x;}))
               - Math.min.apply(null, tipPts.map(function(p){return p.x;}));
     var baseW = Math.max.apply(null, basePts.map(function(p){return p.x;}))
               - Math.min.apply(null, basePts.map(function(p){return p.x;}));
 
-    // Base must be significantly wider than tip (ratio 1.6, was 1.35)
-    if (baseW > tipW * 1.6) score += 1;
+    // 3. Base much wider than tip
+    if (baseW > tipW * 1.9) score += 1;
 
-    // Tip must be narrow (< 0.40 of total width, was 0.55)
-    if (tipW < 0.40) score += 1;
+    // 4. Tip stays narrow
+    if (tipW < 0.35) score += 1;
 
-    // Two lobes at base: left and right clusters, each needing decent size
+    // 5. Two distinct symmetric lobes at base
     var leftBase  = basePts.filter(function(p){ return p.x < 0.42; });
     var rightBase = basePts.filter(function(p){ return p.x > 0.58; });
     var baseBalance = Math.min(leftBase.length, rightBase.length) /
                       Math.max(leftBase.length, rightBase.length || 1);
-    if (leftBase.length >= 6 && rightBase.length >= 6 && baseBalance > 0.45) score += 1;
+    if (leftBase.length >= 9 && rightBase.length >= 9 && baseBalance > 0.50) score += 1;
 
-    // Must have drawn a decent distance (200px minimum, was 120)
+    // 6. Substantial drawing distance (deliberate outline)
     var travel = 0;
     for (var i = 1; i < pts.length; i++) {
-      var dx = pts[i].x - pts[i-1].x, dy = pts[i].y - pts[i-1].y;
-      travel += Math.sqrt(dx*dx + dy*dy);
+      var ddx = pts[i].x - pts[i-1].x, ddy = pts[i].y - pts[i-1].y;
+      travel += Math.sqrt(ddx*ddx + ddy*ddy);
     }
-    if (travel > 200) score += 1;
+    if (travel > 350) score += 1;
 
-    // Tip must round off — topmost 10% of points stay within narrow x band
+    // 7. Rounded tip — topmost 10% forms a narrow cap
     var topPts = norm.filter(function(p){ return p.y < 0.12; });
     if (topPts.length >= 3) {
       var topW = Math.max.apply(null, topPts.map(function(p){return p.x;}))
                - Math.min.apply(null, topPts.map(function(p){return p.x;}));
-      if (topW < 0.30) score += 1;
+      if (topW < 0.25) score += 1;
     }
 
-    // Shaft must be present: middle 50% of height should be narrower than base
+    // 8. Shaft: middle section narrower than base
     var shaftPts = norm.filter(function(p){ return p.y > 0.25 && p.y < 0.65; });
     if (shaftPts.length >= 4) {
       var shaftW = Math.max.apply(null, shaftPts.map(function(p){return p.x;}))
                  - Math.min.apply(null, shaftPts.map(function(p){return p.x;}));
-      if (shaftW < baseW * 0.85) score += 1;
+      if (shaftW < baseW * 0.75) score += 1;
     }
 
-    // Needs 7 out of 7 now (was 6 out of 7)
-    if (score >= 7) {
+    // 9. Y-reversal: tip must be in the middle of the path (went up and came back)
+    var tipIdx = 0;
+    for (var j = 1; j < pts.length; j++) {
+      if (pts[j].y < pts[tipIdx].y) tipIdx = j;
+    }
+    var tipFrac = tipIdx / (pts.length - 1);
+    if (tipFrac > 0.12 && tipFrac < 0.88) score += 1;
+
+    if (score >= 9) {
       trail = [];
       celebrate();
     }
   }
 
   function celebrate() {
-    celebrated = true;
+    celebrating = true;
+    celebrateCount++;
 
-    // ---- toast message ----
-    var msgs = ['Sir.', 'A classic.', 'Bravo.', 'Artist.', 'Subtle.', '...noted.', 'Iconic.'];
-    var msg = msgs[Math.floor(Math.random() * msgs.length)];
+    var msgs = [
+      "Aren't you the new Van Dyck?",
+      "We get it bud...",
+      "Hello? Human resources?"
+    ];
+    var msg = msgs[celebrateCount - 1];
+
+    // ---- toast ----
     var toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:999999;font-family:"Bebas Neue",sans-serif;font-size:clamp(32px,7vw,80px);letter-spacing:8px;color:#ffe100;text-shadow:4px 0 0 #ff2200,-4px 0 0 #ff2200;pointer-events:none;opacity:1;transition:opacity 0.8s ease;';
+    toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:999999;font-family:"Bebas Neue",sans-serif;font-size:clamp(22px,4.5vw,58px);letter-spacing:5px;color:#ffe100;text-shadow:3px 0 0 #ff2200,-3px 0 0 #ff2200;pointer-events:none;opacity:1;transition:opacity 0.8s ease;text-align:center;max-width:90vw;';
     toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(function() { toast.style.opacity = '0'; }, 2500);
-    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); celebrated = false; }, 3500);
+    setTimeout(function() { toast.style.opacity = '0'; }, 2800);
+    setTimeout(function() {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+      celebrating = false;
+    }, 3800);
 
     // ---- confetti ----
     var colors = ['#ff2200','#ffe100','#00ff88','#e8e0d0','#ff88cc','#0055ff','#ffaa00'];
