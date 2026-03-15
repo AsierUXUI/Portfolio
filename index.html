@@ -903,7 +903,7 @@
     display: flex;
     position: relative;
     box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 200px rgba(180,120,40,0.08);
-    max-width: min(820px, 92vw);
+    max-width: min(1100px, 96vw);
     width: 100%;
   }
 
@@ -1465,7 +1465,7 @@
     display: flex;
     position: relative;
     box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 200px rgba(180,120,40,0.08);
-    max-width: min(820px, 92vw);
+    max-width: min(1100px, 96vw);
     width: 100%;
     animation: flicker-glow 3s ease-in-out infinite;
   }
@@ -1798,9 +1798,7 @@
   <div class="about-text">
     <div class="section-label">005 / ABOUT</div>
     <h2>WHO<br>AM I</h2>
-    <p><strong>Asier Morais Manrique.</strong></p>
-    <p>Artist and zinemaker based in Copenhagen. I paint from memory — mostly bodies I encounter in pools, saunas, streets, and waiting rooms. I make zines when something accumulates enough weight to need its own container.</p>
-    <p>My practice lives somewhere between figuration and mess: acrylic, oil pastel, plaster, whatever makes sense on the day. I also write — essays, notes, observations — usually while drawing, usually about what I'm looking at.</p>
+    <p>Im Asier, a sketch artist from Spain, based in Copenhagen. Big fan of drawing, painting, sculpting, making short stories and many other useless things.</p>
     <div class="social-links">
       <a href="https://pixelfed.social/asier_morais" target="_blank">PIXELFED</a>
       <a href="https://www.instagram.com/asier_morais/" target="_blank">INSTAGRAM</a>
@@ -2371,8 +2369,6 @@ function fbRunFlip(dir, nli, nri) {
   fe.style.display="block"; fe.innerHTML=""; fe.style.width=(sw/2)+"px"; fe.style.height=sh+"px"; fe.style.top="0";
   var ff=document.createElement("div"); ff.className="fb-ff";
   var fb2=document.createElement("div"); fb2.className="fb-fb";
-  // fb-fnf (next): 0→-180deg, left origin → lands LEFT; back face on LEFT = nli
-  // fb-fpf (prev): 0→+180deg, right origin → lands RIGHT; back face on RIGHT = nri
   var ti = dir==="next" ? fbSpread-1 : fbSpread+2;
   var ii = dir==="next" ? nli : nri;
   if (dir==="next") { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
@@ -2383,21 +2379,23 @@ function fbRunFlip(dir, nli, nri) {
   var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb2.appendChild(sfb);
   fe.appendChild(ff); fe.appendChild(fb2);
   fe.classList.add('flip-anim');
-  if (dir==="next") fbDrawPage("fb-cr", nri);
-  else              fbDrawPage("fb-cl", nli);
+  var _fbPreUncov = new Image();
+  var fbUncovId  = dir==="next" ? "fb-cr" : "fb-cl";
+  var fbUncovIdx = dir==="next" ? nri : nli;
+  if (fbUncovIdx>=0 && fbUncovIdx<fbTotal) _fbPreUncov.src = fbPages[fbUncovIdx];
   fe.style.animation=(dir==="next"?"fb-fnf":"fb-fpf")+" 0.55s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
     document.getElementById("fb-nl").textContent=nli<fbTotal?"p."+(nli+1):"";
     document.getElementById("fb-nr").textContent=nri<fbTotal?"p."+(nri+1):"";
-    var covId  = dir==="next" ? "fb-cl" : "fb-cr";
-    var covIdx = dir==="next" ? nli : nri;
-    var st=setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; },400);
-    function done(){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; }
-    var c=document.getElementById(covId);
-    if(covIdx<0||covIdx>=fbTotal){c.style.display="none";done();}
-    else{ c.style.display="block"; var im=new Image(); im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();}; im.onerror=done; im.src=fbPages[covIdx]; }
+    var pending=2;
+    var st=setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; },600);
+    function done(){ if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; fbUpdateThumbs(); fbFlipping=false; } }
+    function drawCov(cid,idx){ var c=document.getElementById(cid); if(idx<0||idx>=fbTotal){c.style.display="none";done();return;} c.style.display="block"; var im=new Image(); im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();}; im.onerror=done; im.src=fbPages[idx]; }
+    function drawUncov(cid,im,idx){ var c=document.getElementById(cid); if(idx<0||idx>=fbTotal){c.style.display="none";done();return;} c.style.display="block"; if(im.complete&&im.naturalWidth){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();} else{im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();};im.onerror=done;} }
+    drawCov(dir==="next"?"fb-cl":"fb-cr", dir==="next"?nli:nri);
+    drawUncov(fbUncovId, _fbPreUncov, fbUncovIdx);
   });
 }
 
@@ -2616,25 +2614,38 @@ function zineRunFlip(dir, nli, nri) {
   var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb.appendChild(sfb);
   fe.appendChild(ff); fe.appendChild(fb);
   fe.classList.add('flip-anim');
-  // Draw the side that ends up uncovered when the flip lands (right for next, left for prev)
-  if (dir===1) zineDrawPage("zine-cr", nri);
-  else         zineDrawPage("zine-cl", nli);
+  // Preload the uncovered canvas image early so it's likely cached by animationend
+  var _preUncov = new Image();
+  var uncovId  = dir===1 ? "zine-cr" : "zine-cl";
+  var uncovIdx = dir===1 ? nri : nli;
+  if (uncovIdx>=0 && uncovIdx<zineTotalPages) _preUncov.src = ZINE_PAGES[uncovIdx];
   fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
     document.getElementById("zine-nl").textContent = nli<zineTotalPages ? "p."+(nli+1) : "";
     document.getElementById("zine-nr").textContent = nri<zineTotalPages ? "p."+(nri+1) : "";
-    // Wait for the canvas still covered by the flip element (left for next, right for prev)
-    var covId  = dir===1 ? "zine-cl" : "zine-cr";
-    var covIdx = dir===1 ? nli : nri;
-    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; }, 400);
-    function done(){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; }
-    var c=document.getElementById(covId);
-    if(covIdx<0||covIdx>=zineTotalPages){c.style.display="none";done();}
-    else{ c.style.display="block"; var im=new Image();
+    var pending = 2;
+    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; }, 600);
+    function done(){ if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; zineUpdateThumbs(); zineFlipping=false; } }
+    function drawCov(cid, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=zineTotalPages){c.style.display="none";done();return;}
+      c.style.display="block"; var im=new Image();
       im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();};
-      im.onerror=done; im.src=ZINE_PAGES[covIdx]; }
+      im.onerror=done; im.src=ZINE_PAGES[idx];
+    }
+    function drawUncov(cid, im, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=zineTotalPages){c.style.display="none";done();return;}
+      c.style.display="block";
+      if(im.complete && im.naturalWidth){ c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done(); }
+      else{ im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();}; im.onerror=done; }
+    }
+    // covered canvas (under flip at landing): left for next, right for prev
+    drawCov(dir===1?"zine-cl":"zine-cr", dir===1?nli:nri);
+    // uncovered canvas: draw from preloaded image (started 0.6s ago)
+    drawUncov(uncovId, _preUncov, uncovIdx);
   });
 }
 
@@ -2864,23 +2875,35 @@ function amadisRunFlip(dir, nli, nri) {
   var sfb=document.createElement('div'); sfb.className='flip-shadow-fb'; fb.appendChild(sfb);
   fe.appendChild(ff); fe.appendChild(fb);
   fe.classList.add('flip-anim');
-  if (dir===1) amadisDrawPage("amadis-cr", nri);
-  else         amadisDrawPage("amadis-cl", nli);
+  var _amPreUncov = new Image();
+  var amUncovId  = dir===1 ? "amadis-cr" : "amadis-cl";
+  var amUncovIdx = dir===1 ? nri : nli;
+  if (amUncovIdx>=0 && amUncovIdx<amadisTotal) _amPreUncov.src = AMADIS_PAGES[amUncovIdx];
   fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
   fe.addEventListener("animationend", function h() {
     fe.removeEventListener("animationend",h);
     fe.classList.remove('flip-anim');
     document.getElementById("amadis-nl").textContent = nli<amadisTotal ? "p."+(nli+1) : "";
     document.getElementById("amadis-nr").textContent = nri<amadisTotal ? "p."+(nri+1) : "";
-    var covId  = dir===1 ? "amadis-cl" : "amadis-cr";
-    var covIdx = dir===1 ? nli : nri;
-    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; }, 400);
-    function done(){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; }
-    var c=document.getElementById(covId);
-    if(covIdx<0||covIdx>=amadisTotal){c.style.display="none";done();}
-    else{ c.style.display="block"; var im=new Image();
+    var pending = 2;
+    var st = setTimeout(function(){ fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; }, 600);
+    function done(){ if(--pending===0){ clearTimeout(st); fe.style.display="none"; fe.style.animation=""; amadisUpdateThumbs(); amadisFlipping=false; } }
+    function drawCov(cid, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=amadisTotal){c.style.display="none";done();return;}
+      c.style.display="block"; var im=new Image();
       im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();};
-      im.onerror=done; im.src=AMADIS_PAGES[covIdx]; }
+      im.onerror=done; im.src=AMADIS_PAGES[idx];
+    }
+    function drawUncov(cid, im, idx) {
+      var c=document.getElementById(cid);
+      if(idx<0||idx>=amadisTotal){c.style.display="none";done();return;}
+      c.style.display="block";
+      if(im.complete && im.naturalWidth){ c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done(); }
+      else{ im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);done();}; im.onerror=done; }
+    }
+    drawCov(dir===1?"amadis-cl":"amadis-cr", dir===1?nli:nri);
+    drawUncov(amUncovId, _amPreUncov, amUncovIdx);
   });
 }
 
