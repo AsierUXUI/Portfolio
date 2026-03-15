@@ -1,0 +1,3399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASIER MORAIS MANRIQUE — ART / ZINES / WORDS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #ff2200;
+    --yellow: #ffe100;
+    --green: #00ff88;
+    --bg: #0a0a0a;
+    --paper: #e8e0d0;
+    --ink: #111;
+    --blue: #0055ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Courier Prime', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* NOISE TEXTURE */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: relative;
+    border-bottom: 3px solid var(--red);
+    padding: 0;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .header-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(255,34,0,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,85,255,0.1) 0%, transparent 50%),
+      #0a0a0a;
+  }
+
+  .header-glitch {
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    height: 3px;
+    background: var(--red);
+    animation: glitch-bar 3s infinite;
+  }
+
+  @keyframes glitch-bar {
+    0%, 90%, 100% { transform: translateX(0); opacity: 1; }
+    91% { transform: translateX(-10px); opacity: 0.5; }
+    93% { transform: translateX(15px); opacity: 0.8; }
+    95% { transform: translateX(-5px); opacity: 0.3; }
+    97% { transform: translateX(0); opacity: 1; }
+  }
+
+  .site-title {
+    position: relative;
+    z-index: 2;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 12vw, 140px);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    padding: 20px 30px 5px;
+    color: var(--paper);
+    text-shadow:
+      4px 0 0 var(--red),
+      -2px 0 0 var(--blue);
+    animation: chromatic 8s infinite;
+  }
+
+  @keyframes chromatic {
+    0%, 85%, 100% { text-shadow: 4px 0 0 var(--red), -2px 0 0 var(--blue); }
+    86% { text-shadow: 6px 0 0 var(--red), -4px 0 0 var(--blue); }
+    88% { text-shadow: 2px 0 0 var(--red), -6px 0 0 var(--blue); }
+    90% { text-shadow: 4px 0 0 var(--red), -2px 0 0 var(--blue); }
+  }
+
+  .site-subtitle {
+    position: relative;
+    z-index: 2;
+    font-family: 'VT323', monospace;
+    font-size: clamp(16px, 3vw, 26px);
+    color: var(--green);
+    padding: 0 34px 20px;
+    letter-spacing: 4px;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    background: var(--red);
+    padding: 0;
+    display: flex;
+    gap: 0;
+    border-bottom: 3px solid var(--yellow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    letter-spacing: 3px;
+    padding: 10px 22px;
+    border-right: 2px solid rgba(255,255,255,0.3);
+    transition: background 0.1s, color 0.1s;
+    text-transform: uppercase;
+  }
+
+  nav a:hover {
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  /* ===== TICKER ===== */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--yellow);
+    border-bottom: 2px solid var(--ink);
+    padding: 6px 0;
+  }
+
+  .ticker {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 30s linear infinite;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: 2px;
+  }
+
+  .ticker span { padding: 0 40px; }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ===== SECTIONS ===== */
+  section {
+    padding: 60px 30px;
+    border-bottom: 2px solid #222;
+    position: relative;
+    scroll-margin-top: 52px;
+  }
+
+  .section-label {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    order: 2;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 8vw, 90px);
+    line-height: 1;
+    margin-bottom: 0;
+    position: relative;
+    letter-spacing: 2px;
+  }
+  .section-subtitle {
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    color: #888;
+    letter-spacing: 1px;
+    margin-top: 6px;
+    margin-bottom: 36px;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+
+  .section-title .outline {
+    -webkit-text-stroke: 2px var(--paper);
+    color: transparent;
+  }
+
+  /* ===== PAINTINGS GRID ===== */
+  #paintings {
+    background: #0d0d0d;
+  }
+
+  .paintings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 2px solid #333;
+  }
+
+  .painting-card {
+    position: relative;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    border: 1px solid #222;
+    cursor: pointer;
+  }
+
+  .painting-card .art-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #444;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .painting-card:nth-child(1) .art-placeholder { background: #1a0505; }
+  .painting-card:nth-child(2) .art-placeholder { background: #050a1a; }
+  .painting-card:nth-child(3) .art-placeholder { background: #0a1a05; }
+  .painting-card:nth-child(4) .art-placeholder { background: #1a1005; }
+  .painting-card:nth-child(5) .art-placeholder { background: #0d0d1a; }
+  .painting-card:nth-child(6) .art-placeholder { background: #1a0510; }
+
+  .painting-card:hover .art-placeholder {
+    transform: scale(1.04);
+  }
+
+  .painting-card:hover .card-overlay {
+    opacity: 1;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,34,0,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 20px;
+  }
+
+  .card-overlay h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .card-overlay p {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  .art-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+  }
+
+  .art-placeholder .placeholder-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    line-height: 2;
+  }
+
+  /* ===== DRAWINGS ===== */
+  #drawings {
+    background: #080808;
+  }
+
+  .drawings-masonry {
+    columns: 3;
+    gap: 12px;
+  }
+
+  .drawing-item {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+    cursor: pointer;
+  }
+
+  .drawing-item:hover .draw-overlay {
+    opacity: 1;
+  }
+
+  .draw-placeholder {
+    width: 100%;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: #333;
+    letter-spacing: 2px;
+    position: relative;
+  }
+
+  .drawing-item:nth-child(1) .draw-placeholder { height: 280px; }
+  .drawing-item:nth-child(2) .draw-placeholder { height: 200px; }
+  .drawing-item:nth-child(3) .draw-placeholder { height: 350px; }
+  .drawing-item:nth-child(4) .draw-placeholder { height: 220px; }
+  .drawing-item:nth-child(5) .draw-placeholder { height: 300px; }
+  .drawing-item:nth-child(6) .draw-placeholder { height: 180px; }
+  .drawing-item:nth-child(7) .draw-placeholder { height: 260px; }
+  .drawing-item:nth-child(8) .draw-placeholder { height: 240px; }
+
+  .draw-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,85,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .draw-overlay span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: 3px;
+  }
+
+  /* ===== ZINES ===== */
+  #zines {
+    background: #0e0e0e;
+  }
+
+  .zines-row {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding: 24px 8px 32px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--red) #111;
+    background: linear-gradient(180deg, transparent 85%, #1a1008 100%);
+    border-bottom: 4px solid #2a1a08;
+    box-shadow: inset 0 -8px 24px rgba(0,0,0,0.3);
+    border-radius: 0 0 2px 2px;
+  }
+
+  .zines-row::-webkit-scrollbar { height: 4px; }
+  .zines-row::-webkit-scrollbar-track { background: #111; }
+  .zines-row::-webkit-scrollbar-thumb { background: var(--red); }
+
+  .zine-card {
+    flex: 0 0 260px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    position: relative;
+  }
+  .zine-card:hover {
+    transform: translateY(-8px) rotate(-1deg);
+    box-shadow: 8px 16px 40px rgba(0,0,0,0.5);
+  }
+
+  .zine-card:hover { transform: translateY(-8px) rotate(1deg); }
+  .zine-card:nth-child(even):hover { transform: translateY(-8px) rotate(-1deg); }
+
+  .zine-cover {
+    width: 260px;
+    height: 350px;
+    border: 2px solid #444;
+    border-left: 8px solid #222;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.4), inset -3px 0 8px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .zine-card:nth-child(1) .zine-cover { background: #1a0000; border-color: var(--red); }
+  .zine-card:nth-child(2) .zine-cover { background: #00001a; border-color: var(--blue); }
+  .zine-card:nth-child(3) .zine-cover { background: #0d1a00; border-color: var(--green); }
+  .zine-card:nth-child(4) .zine-cover { background: #1a1500; border-color: var(--yellow); }
+  .zine-card:nth-child(5) .zine-cover { background: #1a0010; border-color: #ff00aa; }
+
+  .zine-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 70px;
+    line-height: 1;
+    color: rgba(255,255,255,0.08);
+    position: absolute;
+    bottom: -10px;
+    right: 5px;
+  }
+
+  .zine-title {
+    font-family: 'Special Elite', serif;
+    font-size: 15px;
+    color: var(--paper);
+    text-align: center;
+    padding: 0 15px;
+    position: relative;
+    z-index: 1;
+    line-height: 1.4;
+  }
+
+  .zine-issue {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #555;
+    position: absolute;
+    top: 8px;
+    left: 10px;
+  }
+
+  .zine-meta {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #888;
+    padding: 8px 4px 4px;
+    text-align: center;
+    width: 260px;
+  }
+
+  /* ===== JOURNAL / WRITING ===== */
+  #journal {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  #journal .section-label { color: #c00; }
+
+  .journal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .entry-card {
+    border: 1px solid #bbb;
+    padding: 24px;
+    position: relative;
+    cursor: pointer;
+    background: #f5ede0;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .entry-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .entry-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--red);
+  }
+
+  .entry-date {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+
+  .entry-title {
+    font-family: 'Special Elite', serif;
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .entry-excerpt {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #444;
+  }
+
+  .entry-card.featured {
+    grid-column: 1 / -1;
+    background: var(--ink);
+    color: var(--paper);
+    border-color: #333;
+  }
+
+  .entry-card.featured .entry-title { color: var(--paper); font-size: 30px; }
+  .entry-card.featured .entry-excerpt { color: #aaa; }
+  .entry-card.featured .entry-date { color: var(--red); }
+  .entry-card.featured
+  .entry-card.featured:hover { box-shadow: 6px 6px 0 var(--red); }
+
+  /* ===== ABOUT ===== */
+  #about {
+    background: #050505;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-photo {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #111;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: #333;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,34,0,0.03) 10px,
+      rgba(255,34,0,0.03) 11px
+    );
+    pointer-events: none;
+  }
+  /* when photo has real image, suppress the placeholder ::after */
+  #about-photo-wrap::after { display: none; }
+
+  .about-text h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    line-height: 0.9;
+    margin-bottom: 24px;
+  }
+
+  .about-text p {
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    line-height: 1.9;
+    color: #aaa;
+    margin-bottom: 18px;
+  }
+
+  .about-text p strong { color: var(--paper); }
+
+  .social-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+
+  .social-links a {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: var(--paper);
+    text-decoration: none;
+    border: 1px solid #444;
+    padding: 6px 16px;
+    transition: all 0.15s;
+  }
+
+  .social-links a:hover {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* ===== CONTACT ===== */
+  #contact {
+    background: var(--red);
+    color: #fff;
+    text-align: center;
+  }
+
+  #contact .section-title {
+    font-size: clamp(60px, 12vw, 130px);
+  }
+
+  #contact p {
+    font-family: 'Courier Prime', monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-bottom: 30px;
+  }
+
+  .contact-email {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(24px, 4vw, 48px);
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 4px solid rgba(255,255,255,0.4);
+    padding-bottom: 4px;
+    letter-spacing: 3px;
+    transition: border-color 0.2s;
+  }
+
+  .contact-email:hover { border-color: #fff; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #000;
+    border-top: 2px solid #222;
+    padding: 24px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer .footer-left {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: #444;
+  }
+
+  footer .footer-right {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #333;
+  }
+
+  /* ===== UPLOAD HINT ===== */
+
+  /* ===== MARQUEE DIVIDER ===== */
+  .marquee-divider {
+    background: #000;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+    padding: 12px 0;
+    overflow: hidden;
+  }
+
+  .marquee-inner {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 20s linear infinite;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 8px;
+    color: #1a1a1a;
+  }
+
+  .marquee-inner span { padding: 0 30px; }
+  .marquee-inner .accent { color: var(--red); }
+
+
+
+  /* ===== FLIPBOOK CTA ===== */
+  .flipbook-cta {
+    margin-top: 48px;
+    text-align: center;
+    padding: 36px 20px;
+    border: 1px dashed #2a2a2a;
+  }
+  .flipbook-cta-text {
+    font-family: 'Special Elite', serif;
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+  .flipbook-cta-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--paper);
+    background: transparent;
+    border: 2px solid #444;
+    padding: 12px 36px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .flipbook-cta-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== FLIPBOOK PANEL ===== */
+  #fb-panel {
+    margin-top: 0;
+    border-top: 3px solid var(--red);
+    background: #060606;
+    position: relative;
+    overflow: hidden;
+  }
+  .fb-panel-header {
+    padding: 28px 30px 18px;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .fb-panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 0.9;
+    text-shadow: 3px 0 0 var(--red), -1px 0 0 #0055ff;
+  }
+  .fb-panel-sub {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #444;
+    padding-bottom: 4px;
+  }
+  #fb-drop-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 20px;
+  }
+  #fb-drop-zone {
+    width: min(520px, 90vw);
+    border: 2px dashed #2a2a2a;
+    padding: 50px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #fb-drop-zone:hover, #fb-drop-zone.drag-over { border-color: var(--red); background: rgba(255,34,0,0.04); }
+  .fb-drop-icon { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: #1f1f1f; letter-spacing: 4px; margin-bottom: 12px; }
+  .fb-drop-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; margin-bottom: 8px; }
+  .fb-drop-sub { font-family: 'VT323', monospace; font-size: 15px; letter-spacing: 3px; color: #444; margin-bottom: 20px; }
+  .fb-pick-btn { background: var(--red); color: #fff; border: none; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; }
+  .fb-pick-btn:hover { background: #cc1a00; }
+  #fb-prog-wrap { width: min(520px, 90vw); margin-top: 18px; }
+  .fb-prog-label { font-family: 'VT323', monospace; font-size: 13px; letter-spacing: 3px; color: #444; margin-bottom: 6px; }
+  .fb-prog-outer { height: 3px; background: #1a1a1a; }
+  .fb-prog-inner { height: 3px; background: var(--red); width: 0%; transition: width 0.2s; }
+  #fb-viewer { display: none; flex-direction: column; align-items: center; padding: 24px 20px 50px; }
+  .fb-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 22px; flex-wrap: wrap; justify-content: center; }
+  .fb-btn { background: #111; color: var(--paper); border: 1px solid #333; font-family: 'VT323', monospace; font-size: 17px; letter-spacing: 2px; padding: 7px 18px; cursor: pointer; transition: all 0.1s; }
+  .fb-btn:hover { background: var(--red); border-color: var(--red); }
+  .fb-btn:disabled { opacity: 0.3; cursor: default; }
+  .fb-btn:disabled:hover { background: #111; border-color: #333; }
+  .fb-btn-red { background: var(--red); border-color: var(--red); color: #fff; }
+  .fb-btn-red:hover { background: #cc1a00; }
+  .fb-indicator { font-family: 'VT323', monospace; font-size: 17px; letter-spacing: 3px; color: #444; min-width: 100px; text-align: center; }
+  .fb-stage-wrap { perspective: 2500px; width: min(780px, 94vw); }
+  .fb-spread { display: flex; box-shadow: 0 24px 70px rgba(0,0,0,0.9); position: relative; }
+  .fb-page { flex: 1; overflow: hidden; background: #1a1a1a; position: relative; }
+  .fb-page canvas { display: block; width: 100%; height: auto; }
+  .fb-spine { width: 7px; background: linear-gradient(90deg,#000,#1a1a1a,#000); flex-shrink: 0; }
+  .fb-pn { position: absolute; bottom: 7px; font-family: 'VT323', monospace; font-size: 12px; letter-spacing: 2px; color: #333; }
+  .fb-pnl { right: 8px; } .fb-pnr { left: 8px; }
+  #fb-flip-el .fb-ff, #fb-flip-el .fb-fb { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; background: #1a1a1a; }
+  #fb-flip-el .fb-fb { transform: rotateY(180deg); }
+  @keyframes fb-fnf { 0%{transform:rotateY(0)} 100%{transform:rotateY(-180deg)} }
+  @keyframes fb-fpf { 0%{transform:rotateY(0)} 100%{transform:rotateY(180deg)} }
+  .fb-thumbs { display: flex; gap: 5px; overflow-x: auto; padding: 14px 4px 4px; width: min(780px, 94vw); scrollbar-width: thin; scrollbar-color: var(--red) #111; margin-top: 14px; }
+  .fb-thumbs::-webkit-scrollbar { height: 3px; }
+  .fb-thumbs::-webkit-scrollbar-thumb { background: var(--red); }
+  .fb-th { flex: 0 0 auto; width: 52px; cursor: pointer; border: 2px solid transparent; background: #111; position: relative; }
+  .fb-th:hover { border-color: #444; } .fb-th.ac { border-color: var(--red); }
+  .fb-th canvas { width: 100%; display: block; }
+  .fb-thn { position: absolute; bottom: 2px; right: 3px; font-family: 'VT323', monospace; font-size: 10px; color: #444; }
+  .fb-dl-note { font-family: 'VT323', monospace; font-size: 12px; letter-spacing: 3px; color: #2a2a2a; text-align: center; margin-top: 18px; }
+  .fb-loading-text { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 4px; }
+  .fb-loading-bar-outer { width: 280px; height: 3px; background: #222; }
+  .fb-loading-bar-inner { height: 3px; background: var(--red); width: 0%; transition: width 0.15s; }
+
+  @media (max-width: 768px) {
+    .paintings-grid { grid-template-columns: repeat(2, 1fr); }
+    .drawings-masonry { columns: 2; }
+    .journal-grid { grid-template-columns: 1fr; }
+    #about { grid-template-columns: 1fr; }
+    nav a { font-size: 16px; padding: 10px 14px; letter-spacing: 1px; }
+  }
+  @media (max-width: 480px) {
+    .paintings-grid { grid-template-columns: 1fr; }
+    .drawings-masonry { columns: 1; }
+  }
+
+  .zine-card--real .zine-cover { border-color: #888; cursor: pointer; }
+  .zine-card--real:hover { transform: translateY(-10px) rotate(-1deg) scale(1.03); }
+  .zine-card--real .zine-cover::after {
+    content: "▸ READ";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .zine-card--real:hover .zine-cover::after { opacity: 1; }
+
+  /* IMMERSIVE ZINE OVERLAY */
+  #zine-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50000;
+    background: #0a0604;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #zine-overlay.open { display: flex; }
+
+  /* pixel candles */
+  .candle-wrap {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 50001;
+  }
+  .candle-wrap.left  { left: clamp(10px, 3vw, 50px); }
+  .candle-wrap.right { right: clamp(10px, 3vw, 50px); }
+
+  canvas.candle-canvas { image-rendering: pixelated; }
+
+  /* book area */
+  #zine-book-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0 10px;
+    position: relative;
+    z-index: 50002;
+  }
+
+  #zine-spread {
+    display: flex;
+    position: relative;
+    box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 200px rgba(180,120,40,0.08);
+    max-width: min(820px, 92vw);
+    width: 100%;
+  }
+
+  .zine-page-side {
+    flex: 1;
+    overflow: hidden;
+    background: #111;
+    position: relative;
+    min-height: 100px;
+  }
+  .zine-page-side canvas { display: block; width: 100%; height: auto; }
+  .zine-spine-inner { width: 6px; background: linear-gradient(90deg,#000,#1a1005,#000); flex-shrink: 0; }
+
+  .zine-pn { position: absolute; bottom: 6px; font-family: "VT323",monospace; font-size: 12px; letter-spacing: 2px; color: #333; }
+  .zine-pnl { right: 8px; }
+  .zine-pnr { left: 8px; }
+
+  #zine-flip-el .zfl-ff, #zine-flip-el .zfl-fb {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; overflow: hidden; background: #111;
+  }
+  #zine-flip-el .zfl-fb { transform: rotateY(180deg); }
+  @keyframes zfl-next { 0%{transform:rotateY(0)} 100%{transform:rotateY(180deg)} }
+  @keyframes zfl-prev { 0%{transform:rotateY(0)} 100%{transform:rotateY(-180deg)} }
+
+  .zine-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .zine-ctrl {
+    background: transparent;
+    color: #8a7a5a;
+    border: 1px solid #2a2215;
+    font-family: "VT323", monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .zine-ctrl:hover { color: var(--paper); border-color: #8a7a5a; }
+  .zine-ctrl:disabled { opacity: 0.2; cursor: default; }
+  .zine-ctrl:disabled:hover { color: #8a7a5a; border-color: #2a2215; }
+  .zine-indicator { font-family: "VT323",monospace; font-size: 15px; letter-spacing: 3px; color: #4a3a25; min-width: 90px; text-align: center; }
+
+  #zine-close {
+    position: fixed;
+    top: 16px; right: 20px;
+    background: transparent;
+    color: #4a3a25;
+    border: 1px solid #2a2215;
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    z-index: 50003;
+    transition: all 0.1s;
+  }
+  #zine-close:hover { color: var(--paper); border-color: #8a7a5a; }
+
+  #zine-title-bar {
+    position: fixed;
+    top: 16px; left: 50%; transform: translateX(-50%);
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(16px,3vw,26px);
+    letter-spacing: 6px;
+    color: #4a3a25;
+    z-index: 50003;
+    pointer-events: none;
+    text-shadow: 0 0 20px rgba(180,120,40,0.3);
+  }
+
+  /* flickering glow from candles */
+  @keyframes flicker-glow {
+    0%,100% { box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 120px rgba(180,100,20,0.06); }
+    50%      { box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 160px rgba(200,120,30,0.12); }
+  }
+  #zine-spread { animation: flicker-glow 3s ease-in-out infinite; }
+
+  /* thumb strip */
+  #zine-thumbs {
+    display: flex; gap: 4px; overflow-x: auto;
+    padding: 10px 4px 2px; max-width: min(820px,92vw);
+    scrollbar-width: thin; scrollbar-color: #3a2a10 #0a0604;
+    margin-top: 10px;
+  }
+  #zine-thumbs::-webkit-scrollbar { height: 2px; }
+  #zine-thumbs::-webkit-scrollbar-thumb { background: #3a2a10; }
+  .zth { flex:0 0 auto; width:44px; cursor:pointer; border:1px solid transparent; background:#111; position:relative; }
+  .zth:hover { border-color: #3a2a10; }
+  .zth.ac { border-color: #8a6a30; }
+  .zth canvas { width:100%; display:block; }
+  .zth-n { position:absolute; bottom:1px; right:2px; font-family:"VT323",monospace; font-size:9px; color:#333; }
+
+  /* real painting card */
+  .painting-card--real:hover .art-placeholder img { transform: scale(1.05); }
+
+  /* CINEMATIC LIGHTBOX */
+  #painting-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 60000;
+    background: rgba(0,0,0,0);
+    transition: background 0.4s ease;
+  }
+  #painting-lightbox.open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #painting-lightbox.visible { background: rgba(0,0,0,0.94); }
+
+  #lb-backdrop {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  #lb-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: min(900px, 96vw);
+    padding: 0 20px;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  #painting-lightbox.visible #lb-inner {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #lb-media-wrap {
+    position: relative;
+    width: 100%;
+    max-height: 72vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #lb-img {
+    max-width: 100%;
+    max-height: 72vh;
+    object-fit: contain;
+    display: block;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+    transition: opacity 0.25s ease;
+  }
+  #lb-img.fading { opacity: 0; }
+
+  /* nav arrows */
+  .lb-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .lb-arrow:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
+  .lb-arrow:disabled { opacity: 0.1; cursor: default; }
+  .lb-arrow:disabled:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); background: transparent; }
+  #lb-prev { left: clamp(8px, 2vw, 32px); }
+  #lb-next { right: clamp(8px, 2vw, 32px); }
+
+  /* caption */
+  #lb-caption {
+    margin-top: 18px;
+    font-family: 'Special Elite', serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    transition: opacity 0.25s ease;
+  }
+  #lb-caption.fading { opacity: 0; }
+
+  /* counter */
+  #lb-counter {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 8px;
+  }
+
+  /* dot indicators */
+  #lb-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .lb-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .lb-dot.ac { background: rgba(255,255,255,0.7); }
+
+  /* top bar */
+  #lb-topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    z-index: 3;
+  }
+  #lb-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.3);
+  }
+  .lb-top-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.4);
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 8px;
+  }
+  .lb-top-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+  /* selfie scribble hover */
+  #about-photo-wrap { position: relative; overflow: hidden; cursor: pointer; }
+  #about-photo-wrap:hover #selfie-scribbles { opacity: 1; }
+  #selfie-scribbles { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+  #selfie-scribbles path {
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    transition: stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  #about-photo-wrap:hover #selfie-scribbles path { stroke-dashoffset: 0; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(2) { transition-delay: 0.05s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(3) { transition-delay: 0.1s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(4) { transition-delay: 0.15s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(5) { transition-delay: 0.2s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(6) { transition-delay: 0.25s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(7) { transition-delay: 0.3s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(8) { transition-delay: 0.35s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(9) { transition-delay: 0.4s; }
+  #about-photo-wrap:hover #selfie-scribbles path:nth-child(10) { transition-delay: 0.45s; }
+
+  /* article reader modal */
+  #article-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 70000;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s;
+    overflow-y: auto;
+  }
+  #article-modal.open { display: block; }
+  #article-modal.visible { background: rgba(232,224,208,0.97); }
+  #article-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 80px 30px 100px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  #article-modal.visible #article-inner { opacity: 1; transform: translateY(0); }
+  #article-close, #article2-close {
+    position: fixed;
+    top: 16px; right: 20px;
+    background: transparent;
+    color: #888;
+    border: 1px solid #ccc;
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    z-index: 70001;
+    transition: all 0.15s;
+  }
+  #article2-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 70000;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s;
+    overflow-y: auto;
+  }
+  #article2-modal.open { display: block; }
+  #article2-modal.visible { background: rgba(232,224,208,0.97); }
+  #article2-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 80px 30px 100px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  #article2-modal.visible #article2-inner { opacity: 1; transform: translateY(0); }
+  #article2-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--red);
+    z-index: 70001;
+    display: none;
+  }
+  #article2-modal.open #article2-close { display: block; }
+  #article-close, #article2-close:hover { color: var(--ink); border-color: var(--ink); }
+  .art-h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 7vw, 72px);
+    line-height: 0.95;
+    color: var(--ink);
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .art-meta {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #888;
+    margin-bottom: 48px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 16px;
+  }
+  .art-body p {
+    font-family: 'Special Elite', serif;
+    font-size: 17px;
+    line-height: 1.85;
+    color: #2a2a2a;
+    margin-bottom: 26px;
+  }
+  .art-body blockquote {
+    border-left: 3px solid var(--red);
+    padding-left: 20px;
+    margin: 32px 0;
+    font-family: 'Special Elite', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #444;
+    font-style: italic;
+  }
+  .art-figure {
+    margin: 32px 0;
+    text-align: center;
+  }
+  .art-figure img {
+    max-width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+  .art-figcaption {
+    margin-top: 10px;
+    font-family: 'Special Elite', serif;
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .art-body .art-link {
+    display: inline-block;
+    margin-top: 32px;
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: #888;
+    text-decoration: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .art-body .art-link:hover { color: var(--red); border-color: var(--red); }
+
+  /* ── MOBILE CAROUSELS ── */
+  @media (max-width: 768px) {
+
+    /* NAV: scrollable horizontally */
+    nav { overflow-x: auto; flex-wrap: nowrap; }
+    nav a { font-size: 18px; padding: 10px 14px; white-space: nowrap; }
+
+    /* PAINTINGS: horizontal carousel */
+    .paintings-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 0;
+      border: none;
+      padding-bottom: 8px;
+    }
+    .painting-card {
+      flex: 0 0 80vw;
+      scroll-snap-align: center;
+      border: 2px solid #333;
+      margin-right: 12px;
+    }
+    .painting-card:last-child { margin-right: 0; }
+
+    /* DRAWINGS: horizontal carousel */
+    .drawings-masonry {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      columns: unset;
+      gap: 12px;
+      padding-bottom: 8px;
+    }
+    .drawing-item {
+      flex: 0 0 75vw;
+      scroll-snap-align: center;
+      break-inside: unset;
+    }
+
+    /* ZINES: already flex/overflow-x, just tune it */
+    .zines-row {
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .zine-card {
+      flex: 0 0 80vw;
+      scroll-snap-align: center;
+    }
+
+    /* WRITINGS: stack or single-col carousel */
+    .journal-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      grid-template-columns: unset;
+      gap: 16px;
+      padding-bottom: 8px;
+    }
+    .entry-card {
+      flex: 0 0 80vw;
+      scroll-snap-align: center;
+    }
+
+    /* Carousel scroll hint dots area */
+    .paintings-grid::-webkit-scrollbar,
+    .drawings-masonry::-webkit-scrollbar,
+    .journal-grid::-webkit-scrollbar {
+      height: 4px;
+    }
+    .paintings-grid::-webkit-scrollbar-track,
+    .drawings-masonry::-webkit-scrollbar-track,
+    .journal-grid::-webkit-scrollbar-track {
+      background: #111;
+    }
+    .paintings-grid::-webkit-scrollbar-thumb,
+    .drawings-masonry::-webkit-scrollbar-thumb,
+    .journal-grid::-webkit-scrollbar-thumb {
+      background: var(--red);
+    }
+
+    /* Section titles smaller on mobile */
+    .section-title { font-size: clamp(48px, 15vw, 80px); }
+  }
+
+  
+  #article3-modal {
+    display: none; position: fixed; inset: 0; z-index: 70000;
+    background: rgba(0,0,0,0); transition: background 0.3s; overflow-y: auto;
+  }
+  #article3-modal.open { display: block; }
+  #article3-modal.visible { background: rgba(232,224,208,0.97); }
+  #article3-inner {
+    max-width: 680px; margin: 0 auto; padding: 80px 30px 100px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  #article3-modal.visible #article3-inner { opacity: 1; transform: translateY(0); }
+  #article3-close {
+    position: fixed; top: 16px; right: 20px; background: transparent;
+    border: none; font-size: 22px; cursor: pointer; color: var(--red);
+    z-index: 70001; display: none;
+  }
+  #article3-modal.open #article3-close { display: block; }
+  
+  /* Amadis zine overlay — mirrors zine-overlay */
+
+  #amadis-book-area {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 20px; padding-top: 60px;
+  }
+  #amadis-spread-wrap {
+    display: flex; position: relative;
+    box-shadow: 0 0 80px rgba(0,0,0,0.9);
+  }
+  #amadis-page-left, #amadis-page-right {
+    width: min(42vw, 380px);
+    height: min(59vw, 537px);
+    background: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.2s;
+  }
+  #amadis-thumbs {
+    display: flex; gap: 6px; overflow-x: auto;
+    max-width: min(88vw, 800px); padding: 4px;
+    scrollbar-width: thin; scrollbar-color: #555 #111;
+  }
+  #amadis-thumbs .zt {
+    flex: 0 0 44px; cursor: pointer;
+    border: 2px solid transparent; opacity: 0.5; transition: opacity 0.15s;
+  }
+  #amadis-thumbs .zt:hover { opacity: 0.8; }
+  #amadis-thumbs .zt.zt-active { border-color: var(--red); opacity: 1; }
+  #amadis-thumbs .zt img { width: 100%; display: block; }
+  #amadis-btn-prev, #amadis-btn-next { }
+
+  #amadis-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50000;
+    background: #0a0a0a;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #amadis-overlay.open { display: flex; }
+  #amadis-title-bar {
+    position: fixed;
+    top: 16px; left: 50%; transform: translateX(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 6px;
+    color: var(--paper); z-index: 50002;
+    pointer-events: none;
+  }
+  #amadis-close {
+    position: fixed; top: 16px; right: 20px;
+    background: transparent; color: #8a7a5a;
+    border: 1px solid #555;
+    font-family: 'VT323', monospace; font-size: 15px;
+    letter-spacing: 2px; padding: 5px 14px;
+    cursor: pointer; z-index: 50002;
+  }
+  #amadis-close:hover { color: var(--paper); border-color: #8a7a5a; }
+  #amadis-spread {
+    display: flex; position: relative;
+    box-shadow: 0 0 80px rgba(0,0,0,0.9);
+  }
+  #amadis-page-left, #amadis-page-right {
+    width: min(42vw, 380px);
+    height: min(59vw, 537px);
+    background: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+  }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-bg"></div>
+  <div class="header-glitch"></div>
+  <div class="site-title">ASIER<br>MORAIS</div>
+  <div class="site-subtitle">▸ ARTIST / WRITER / ZINEMAKER ◂</div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <a href="#paintings">PAINTINGS</a>
+  <a href="#drawings">DRAWINGS</a>
+  <a href="#zines">ZINES</a>
+  <a href="#journal">JOURNAL</a>
+  <a href="#about">ABOUT</a>
+  <a href="#contact">CONTACT</a>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>★ PAINTINGS</span>
+    <span>✦ DRAWINGS</span>
+    <span>◈ ZINES</span>
+    <span>▸ WRITING</span>
+    <span>★ ORIGINAL ART</span>
+    <span>▸ MADE WITH HANDS</span>
+    <span>★ PAINTINGS</span>
+    <span>✦ DRAWINGS</span>
+    <span>◈ ZINES</span>
+    <span>▸ WRITING</span>
+    <span>★ ORIGINAL ART</span>
+    <span>▸ MADE WITH HANDS</span>
+  </div>
+</div>
+
+<!-- PAINTINGS -->
+<section id="paintings">
+  <div class="section-title">PAINTINGS</div>
+  <div class="section-label">001 / PAINTINGS</div>
+  <div class="section-subtitle">My messes when I try to put some color in my life.</div>
+
+  <div class="paintings-grid">
+    <div class="painting-card painting-card--real" onclick="openLightbox(0)">
+      <div class="art-placeholder" style="background:#1a1208;">
+        <img src="images/image01.jpg" alt="Untitled painting" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+      </div>
+      <div class="card-overlay">
+        <h3>UNTITLED</h3>
+        <p>ACRYLIC · PLASTER · OIL PASTEL</p>
+      </div>
+    </div>
+    <div class="painting-card painting-card--real" onclick="openLightbox2(0)">
+      <div class="art-placeholder" style="background:#0d0808;">
+        <img src="images/image02.jpg" alt="El huevo frito" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
+      </div>
+      <div class="card-overlay">
+        <h3>EL HUEVO FRITO</h3>
+        <p>ACRYLIC &amp; OIL PASTEL ON CANVAS</p>
+      </div>
+    </div>
+    <div class="painting-card" style="opacity:0.3;pointer-events:none;"><div class="art-placeholder" style="color:#555;font-size:13px;letter-spacing:3px;">MORE COMING SOON</div></div>
+
+</section>
+
+<!-- MARQUEE DIVIDER -->
+<div class="marquee-divider">
+  <div class="marquee-inner">
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+    <span class="accent">///</span><span>DRAWINGS</span>
+  </div>
+</div>
+
+<!-- DRAWINGS -->
+<section id="drawings">
+  <div class="section-title">DRAWINGS</div>
+  <div class="section-label">002 / DRAWINGS</div>
+  <div class="section-subtitle">This is where I have fun.</div>
+
+  <div class="drawings-masonry">
+    <div class="drawing-item drawing-item--real" onclick="openDrawingLB(0)" style="cursor:pointer;">
+      <div class="draw-real-img" style="position:relative;overflow:hidden;">
+        <img src="images/image03.jpg" alt="Untitled — mixed media on paper, 2025" style="width:100%;display:block;">
+        <div class="draw-overlay"><span>MIXED MEDIA · 2025</span></div>
+      </div>
+    </div>
+    <div class="drawing-item drawing-item--real" onclick="openMergedLB(0)" style="cursor:pointer;">
+      <div class="draw-real-img" style="position:relative;overflow:hidden;">
+        <img src="images/image04.jpg" alt="Mixed media" style="width:100%;display:block;">
+        <div class="draw-overlay"><span>MIXED MEDIA · 2024–2025</span></div>
+      </div>
+    </div>
+    <div class="drawing-item drawing-item--real" onclick="openSimpLB(0)" style="cursor:pointer;">
+      <div class="draw-real-img" style="position:relative;overflow:hidden;">
+        <img src="images/image05.jpg" alt="Simpson stickers" style="width:100%;display:block;">
+        <div class="draw-overlay"><span>SIMPSON STICKERS · 2020–ONGOING</span></div>
+      </div>
+    </div>
+
+    <div class="drawing-item" style="opacity:0.4;pointer-events:none;">
+      <div class="draw-placeholder" style="font-size:13px;letter-spacing:2px;color:#555;">MORE COMING SOON</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE DIVIDER -->
+<div class="marquee-divider">
+  <div class="marquee-inner">
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+    <span class="accent">///</span><span>ZINES</span>
+  </div>
+</div>
+
+<!-- ZINES -->
+<section id="zines">
+  <div class="section-title">ZINES</div>
+  <div class="section-label">003 / ZINES</div>
+  <div class="section-subtitle">Short stories that I'm too lazy to finish.</div>
+
+  <div class="zines-row">
+    <!-- MUNDO BABEL — click to open immersive flipbook -->
+    <div class="zine-card zine-card--real" onclick="openZineFlipbook()">
+      <div class="zine-cover zine-cover--real">
+        <img src="images/image06.jpg" alt="Mundo Babel cover" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div class="zine-meta">MUNDO BABEL · 2026 · 14 PGS</div>
+    </div>
+    <!-- AMADIS — click to open immersive flipbook -->
+    <div class="zine-card zine-card--real" onclick="openAmadisFlipbook()">
+      <div class="zine-cover zine-cover--real">
+        <img src="images/image07.jpg" alt="Amadis cover" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div class="zine-meta">AMADIS · 2024 · 14 PGS</div>
+    </div>
+    <!-- placeholder cards -->
+    <div class="zine-card">
+      <div class="zine-cover" style="align-items:center;justify-content:center;opacity:0.4;">
+        <div class="zine-title" style="font-size:13px;color:#555;">more to come...</div>
+      </div>
+      <div class="zine-meta" style="opacity:0.3;">— · —</div>
+    </div>
+    <div class="zine-card">
+      <div class="zine-cover" style="align-items:center;justify-content:center;opacity:0.3;">
+        <div class="zine-title" style="font-size:13px;color:#444;">more to come...</div>
+      </div>
+      <div class="zine-meta" style="opacity:0.2;">— · —</div>
+    </div>
+    <div class="zine-card">
+      <div class="zine-cover" style="align-items:center;justify-content:center;opacity:0.2;">
+        <div class="zine-title" style="font-size:13px;color:#333;">more to come...</div>
+      </div>
+      <div class="zine-meta" style="opacity:0.15;">— · —</div>
+    </div>
+  </div>  </div>
+
+  <!-- FLIPBOOK CTA -->
+  <div class="flipbook-cta">
+    <div class="flipbook-cta-text">Want to convert your zine to a digital flipbook?</div>
+    <button class="flipbook-cta-btn" onclick="toggleFlipbook()">
+      ▸ CLICK HERE ◂
+    </button>
+  </div>
+
+  <!-- FLIPBOOK PANEL (collapsed by default) -->
+  <div id="fb-panel" style="display:none;">
+
+    <div class="fb-panel-header">
+      <div class="fb-panel-title">FLIPBOOK MAKER</div>
+      <div class="fb-panel-sub">DROP A PDF · READ IT AS A FLIPBOOK · DOWNLOAD IT FREE</div>
+    </div>
+
+    <!-- Drop zone -->
+    <div id="fb-drop-area">
+      <div id="fb-drop-zone">
+        <div class="fb-drop-icon">PDF</div>
+        <div class="fb-drop-title">DROP YOUR PDF HERE</div>
+        <div class="fb-drop-sub">OR CLICK TO BROWSE</div>
+        <button class="fb-pick-btn" onclick="document.getElementById('fb-file').click()">CHOOSE FILE</button>
+        <input type="file" id="fb-file" accept=".pdf" style="display:none">
+      </div>
+      <div id="fb-prog-wrap" style="display:none;">
+        <div class="fb-prog-label" id="fb-prog-label">RENDERING PAGES...</div>
+        <div class="fb-prog-outer"><div id="fb-prog-bar" class="fb-prog-inner"></div></div>
+      </div>
+    </div>
+
+    <!-- Viewer (hidden until PDF loaded) -->
+    <div id="fb-viewer" style="display:none;">
+      <div class="fb-controls">
+        <button class="fb-btn" id="fb-btn-new"  onclick="fbReset()">+ NEW PDF</button>
+        <button class="fb-btn" id="fb-btn-prev" onclick="fbPrev()" disabled>&#9668; PREV</button>
+        <div class="fb-indicator" id="fb-indicator">- / -</div>
+        <button class="fb-btn" id="fb-btn-next" onclick="fbNext()">NEXT &#9658;</button>
+        <button class="fb-btn fb-btn-red" onclick="fbDownload()">&#8595; DOWNLOAD</button>
+      </div>
+
+      <div class="fb-stage-wrap">
+        <div class="fb-spread" id="fb-spread">
+          <div class="fb-page" id="fb-pl">
+            <canvas id="fb-cl"></canvas>
+            <span class="fb-pn fb-pnl" id="fb-nl"></span>
+          </div>
+          <div class="fb-spine"></div>
+          <div class="fb-page" id="fb-pr">
+            <canvas id="fb-cr"></canvas>
+            <span class="fb-pn fb-pnr" id="fb-nr"></span>
+          </div>
+          <div id="fb-flip-el" style="display:none;position:absolute;top:0;transform-style:preserve-3d;pointer-events:none;z-index:10;"></div>
+        </div>
+      </div>
+
+      <div id="fb-thumbs" class="fb-thumbs"></div>
+      <div class="fb-dl-note">▸ DOWNLOAD CREATES A STANDALONE HTML FILE — WORKS OFFLINE · NO ACCOUNT NEEDED ◂</div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="fb-loading" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px;">
+      <div class="fb-loading-text" id="fb-loading-text">RENDERING...</div>
+      <div class="fb-loading-bar-outer"><div id="fb-loading-bar" class="fb-loading-bar-inner"></div></div>
+    </div>
+
+  </div><!-- end fb-panel -->
+
+</section>
+
+<!-- JOURNAL -->
+<section id="journal">
+  <div class="section-title">JOURNAL</div>
+  <div class="section-label">004 / JOURNAL</div>
+  <div class="section-subtitle">My mental farts.</div>
+
+  <div class="journal-grid">
+    <div class="entry-card featured" onclick="openArticle()" style="cursor:pointer;">
+      <div class="entry-date">03 · 08 · 2025 — ESSAY</div>
+      <div class="entry-title">Cartographies of Chlorine</div>
+      <div class="entry-excerpt">I recently finished (almost) a zine about swimming pools. The bodies that leave the strongest imprint on my memory are those of very old people — I observe them with a cartographic interest in the map traced by the folds and wrinkles that weave through their wiry bodies.</div>
+    </div>
+
+    <div class="entry-card" onclick="openArticle2()" style="cursor:pointer;">
+      <div class="entry-date">30 · 06 · 2025 — ESSAY</div>
+      <div class="entry-title">Of movies, yogurt&#x2011;men and a Roman empress</div>
+      <div class="entry-excerpt">A Disney·Pixar disaster, a review site for prudes, and a Syrian empress who was killed at 18 for wearing wigs and being addressed as “lady.”</div>
+    </div>
+
+    <div class="entry-card" onclick="openArticle3()" style="cursor:pointer;">
+      <div class="entry-date">04 · 08 · 2025 — ESSAY</div>
+      <div class="entry-title">I saw the fall, and didn&#8217;t look away</div>
+      <div class="entry-excerpt">A seagull ate a pigeon outside my building. Icarus came to mind. One thing led to another.</div>
+    </div>
+
+    <div class="entry-card" style="opacity:0.3;pointer-events:none;">
+      <div class="entry-title" style="font-size:14px;letter-spacing:3px;color:#888;">MORE COMING SOON</div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div>
+    <div class="about-photo" id="about-photo-wrap">
+      <img src="images/image08.jpg" alt="Asier Morais Manrique" id="selfie-img" style="width:100%;height:100%;object-fit:cover;object-position:center 15%;display:block;">
+      <svg id="selfie-scribbles" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 0.25s ease;">
+        <!-- left horn — from hairline up-left -->
+        <path d="M115,45 Q95,12 80,0" stroke="#ffe100" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M100,30 Q96,20 90,12" stroke="#ffe100" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <!-- right horn — up-right -->
+        <path d="M188,42 Q208,10 222,0" stroke="#ffe100" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M202,28 Q206,18 212,10" stroke="#ffe100" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <!-- left eyebrow — angry slant -->
+        <path d="M95,118 L133,108" stroke="#ffe100" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- right eyebrow -->
+        <path d="M168,108 L206,118" stroke="#ffe100" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- moustache -->
+        <path d="M122,178 Q138,170 150,175 Q162,170 178,178" stroke="#ffe100" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M128,183 Q140,190 150,188 Q160,190 172,183" stroke="#ffe100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- goatee -->
+        <path d="M140,200 Q147,218 150,230 Q153,218 160,200" stroke="#ffe100" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M145,214 Q150,234 155,214" stroke="#ffe100" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M136,204 Q139,212 137,220" stroke="#ffe100" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.65"/>
+        <path d="M164,204 Q162,212 164,220" stroke="#ffe100" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.65"/>
+      </svg>
+    </div>
+  </div>
+  <div class="about-text">
+    <div class="section-label">005 / ABOUT</div>
+    <h2>WHO<br>AM I</h2>
+    <p><strong>Asier Morais Manrique.</strong></p>
+    <p>Artist and zinemaker based in Copenhagen. I paint from memory — mostly bodies I encounter in pools, saunas, streets, and waiting rooms. I make zines when something accumulates enough weight to need its own container.</p>
+    <p>My practice lives somewhere between figuration and mess: acrylic, oil pastel, plaster, whatever makes sense on the day. I also write — essays, notes, observations — usually while drawing, usually about what I'm looking at.</p>
+    <div class="social-links">
+      <a href="https://pixelfed.social/asier_morais" target="_blank">PIXELFED</a>
+      <a href="/cdn-cgi/l/email-protection#0465776d61762a717c2a716d446369656d682a676b69">EMAIL</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label" style="color: rgba(255,255,255,0.6);">006 / CONTACT</div>
+  <div class="section-title">DON'T BE SHY,<br>SAY GOOD<br>MORNING</div>
+  <p>FOR COLLABORATIONS OR IF YOU HAVE ANY QUESTIONS</p>
+  <a href="/cdn-cgi/l/email-protection#9bfae8f2fee9b5eee3b5eef2dbfcf6faf2f7b5f8f4f6" class="contact-email"><span class="__cf_email__" data-cfemail="2243514b47500c575a0c574b62454f434b4e0c414d4f">[email&#160;protected]</span></a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">© ASIER MORAIS MANRIQUE — ALL RIGHTS RESERVED</div>
+  <div class="footer-right">BUILT BY HAND · NOT BY ALGORITHM</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  var TRAIL_LIFE = 1000;
+  var TRAIL_FADE = 600;
+  var DOT_SIZE = 5;
+  var SAMPLE_EVERY = 14;
+  var ANALYSE_AFTER = 850;
+
+  var trail = [];
+  var lastRecorded = null;
+  var analyseTimer = null;
+  document.addEventListener("mousemove", function(e) {
+    if (typeof lbOpen !== "undefined" && lbOpen) return;
+    var x = e.clientX;
+    var y = e.clientY;
+
+    var dot = document.createElement("div");
+    dot.style.position = "fixed";
+    dot.style.left = x + "px";
+    dot.style.top = y + "px";
+    dot.style.width = DOT_SIZE + "px";
+    dot.style.height = DOT_SIZE + "px";
+    dot.style.borderRadius = "50%";
+    dot.style.background = "rgba(255,34,0,0.85)";
+    dot.style.pointerEvents = "none";
+    dot.style.zIndex = "99999";
+    dot.style.transform = "translate(-50%,-50%)";
+    dot.style.transition = "opacity " + TRAIL_FADE + "ms ease";
+    document.body.appendChild(dot);
+
+    setTimeout(function() { dot.style.opacity = "0"; }, TRAIL_LIFE);
+    setTimeout(function() { if (dot.parentNode) dot.parentNode.removeChild(dot); }, TRAIL_LIFE + TRAIL_FADE);
+
+    var now = Date.now();
+    var shouldRecord = !lastRecorded;
+    if (!shouldRecord) {
+      var dx = x - lastRecorded.x;
+      var dy = y - lastRecorded.y;
+      if (Math.sqrt(dx*dx + dy*dy) >= SAMPLE_EVERY) shouldRecord = true;
+    }
+    if (shouldRecord) {
+      trail.push({ x: x, y: y, t: now });
+      lastRecorded = { x: x, y: y };
+      celebrated = false;
+    }
+
+    var fresh = [];
+    for (var i = 0; i < trail.length; i++) {
+      if (now - trail[i].t < 7000) fresh.push(trail[i]);
+    }
+    trail = fresh;
+
+    clearTimeout(analyseTimer);
+    analyseTimer = setTimeout(analyseShape, ANALYSE_AFTER);
+  });
+
+  // ---- helpers ----
+
+  function centroid(pts) {
+    var sx = 0, sy = 0;
+    for (var i = 0; i < pts.length; i++) { sx += pts[i].x; sy += pts[i].y; }
+    return { x: sx / pts.length, y: sy / pts.length };
+  }
+
+  // rotate points around origin by angle (radians)
+  function rotatePts(pts, angle) {
+    var cos = Math.cos(angle), sin = Math.sin(angle);
+    var out = [];
+    for (var i = 0; i < pts.length; i++) {
+      out.push({
+        x: pts[i].x * cos - pts[i].y * sin,
+        y: pts[i].x * sin + pts[i].y * cos
+      });
+    }
+    return out;
+  }
+
+  // find the primary axis of the point cloud using covariance
+  function primaryAngle(pts) {
+    var c = centroid(pts);
+    var sxx = 0, syy = 0, sxy = 0;
+    for (var i = 0; i < pts.length; i++) {
+      var dx = pts[i].x - c.x, dy = pts[i].y - c.y;
+      sxx += dx * dx;
+      syy += dy * dy;
+      sxy += dx * dy;
+    }
+    // angle of first principal component
+    return 0.5 * Math.atan2(2 * sxy, sxx - syy);
+  }
+
+  function bbox(pts) {
+    var minX = pts[0].x, maxX = pts[0].x, minY = pts[0].y, maxY = pts[0].y;
+    for (var i = 1; i < pts.length; i++) {
+      if (pts[i].x < minX) minX = pts[i].x;
+      if (pts[i].x > maxX) maxX = pts[i].x;
+      if (pts[i].y < minY) minY = pts[i].y;
+      if (pts[i].y > maxY) maxY = pts[i].y;
+    }
+    return { minX: minX, maxX: maxX, minY: minY, maxY: maxY,
+             W: maxX - minX, H: maxY - minY };
+  }
+
+  function analyseShape() {
+    if (celebrated || trail.length < 40) return;
+    var pts = trail;
+    var n = pts.length;
+
+    // --- step 1: rotate so primary axis is vertical ---
+    var angle = primaryAngle(pts);
+    var cos = Math.cos(-angle), sin = Math.sin(-angle);
+    var rot = pts.map(function(p) {
+      return { x: p.x * cos - p.y * sin, y: p.x * sin + p.y * cos };
+    });
+
+    // --- step 2: normalise to 0..1 ---
+    var xs = rot.map(function(p){ return p.x; });
+    var ys = rot.map(function(p){ return p.y; });
+    var minX = Math.min.apply(null,xs), maxX = Math.max.apply(null,xs);
+    var minY = Math.min.apply(null,ys), maxY = Math.max.apply(null,ys);
+    var W = maxX - minX || 1, H = maxY - minY || 1;
+    var norm = rot.map(function(p){
+      return { x: (p.x - minX) / W, y: (p.y - minY) / H };
+    });
+
+    // --- step 3: score ---
+    var score = 0;
+
+    // Must be taller than wide (aspect > 1.8, stricter than before)
+    var aspect = H / W;
+    if (aspect > 1.8) score += 1;
+
+    // Tip region (top 25%) must be notably narrower than base (bottom 35%)
+    var tipPts  = norm.filter(function(p){ return p.y < 0.25; });
+    var basePts = norm.filter(function(p){ return p.y > 0.65; });
+    if (tipPts.length < 4 || basePts.length < 4) return;
+
+    var tipW  = Math.max.apply(null, tipPts.map(function(p){return p.x;}))
+              - Math.min.apply(null, tipPts.map(function(p){return p.x;}));
+    var baseW = Math.max.apply(null, basePts.map(function(p){return p.x;}))
+              - Math.min.apply(null, basePts.map(function(p){return p.x;}));
+
+    // Base must be significantly wider than tip (ratio 1.6, was 1.35)
+    if (baseW > tipW * 1.6) score += 1;
+
+    // Tip must be narrow (< 0.40 of total width, was 0.55)
+    if (tipW < 0.40) score += 1;
+
+    // Two lobes at base: left and right clusters, each needing decent size
+    var leftBase  = basePts.filter(function(p){ return p.x < 0.42; });
+    var rightBase = basePts.filter(function(p){ return p.x > 0.58; });
+    var baseBalance = Math.min(leftBase.length, rightBase.length) /
+                      Math.max(leftBase.length, rightBase.length || 1);
+    if (leftBase.length >= 6 && rightBase.length >= 6 && baseBalance > 0.45) score += 1;
+
+    // Must have drawn a decent distance (200px minimum, was 120)
+    var travel = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var dx = pts[i].x - pts[i-1].x, dy = pts[i].y - pts[i-1].y;
+      travel += Math.sqrt(dx*dx + dy*dy);
+    }
+    if (travel > 200) score += 1;
+
+    // Tip must round off — topmost 10% of points stay within narrow x band
+    var topPts = norm.filter(function(p){ return p.y < 0.12; });
+    if (topPts.length >= 3) {
+      var topW = Math.max.apply(null, topPts.map(function(p){return p.x;}))
+               - Math.min.apply(null, topPts.map(function(p){return p.x;}));
+      if (topW < 0.30) score += 1;
+    }
+
+    // Shaft must be present: middle 50% of height should be narrower than base
+    var shaftPts = norm.filter(function(p){ return p.y > 0.25 && p.y < 0.65; });
+    if (shaftPts.length >= 4) {
+      var shaftW = Math.max.apply(null, shaftPts.map(function(p){return p.x;}))
+                 - Math.min.apply(null, shaftPts.map(function(p){return p.x;}));
+      if (shaftW < baseW * 0.85) score += 1;
+    }
+
+    // Needs 7 out of 7 now (was 6 out of 7)
+    if (score >= 7) {
+      trail = [];
+    }
+  }
+</script>
+
+<script>
+function buildStandaloneHTML(pageDataJSON, thumbDataJSON, numPages, title) {
+  return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' + title + ' — Flipbook<\/title><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime&family=VT323&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:#e8e0d0;font-family:"Courier Prime",monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:30px 20px 60px}h1{font-family:"Bebas Neue",sans-serif;font-size:clamp(28px,5vw,56px);letter-spacing:2px;text-shadow:3px 0 0 #ff2200;margin-bottom:24px;text-align:center}.controls{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap;justify-content:center}.btn{background:#111;color:#e8e0d0;border:1px solid #333;font-family:"VT323",monospace;font-size:18px;letter-spacing:2px;padding:8px 20px;cursor:pointer}.btn:hover{background:#ff2200;border-color:#ff2200}.btn:disabled{opacity:.3;cursor:default}.pi{font-family:"VT323",monospace;font-size:18px;letter-spacing:3px;color:#555;min-width:110px;text-align:center}.stage{perspective:2500px;width:min(800px,95vw)}.spread{display:flex;box-shadow:0 30px 80px rgba(0,0,0,.8);position:relative}.ps{flex:1;overflow:hidden;background:#1a1a1a;position:relative}.ps canvas{display:block;width:100%;height:auto}.spine{width:8px;background:linear-gradient(90deg,#000,#1a1a1a,#000);flex-shrink:0}.pn{position:absolute;bottom:8px;font-family:"VT323",monospace;font-size:13px;color:#444}.ps:first-child .pn{right:10px}.ps:last-child .pn{left:10px}.fc{position:absolute;top:0;transform-style:preserve-3d;pointer-events:none;z-index:10}.fc .ff,.fc .fb{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:#1a1a1a}.fc .fb{transform:rotateY(180deg)}@keyframes fnf{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}@keyframes fpf{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}.ts{display:flex;gap:5px;overflow-x:auto;padding:14px 4px 4px;width:min(800px,95vw);scrollbar-width:thin;scrollbar-color:#ff2200 #111;margin-top:16px}.th{flex:0 0 auto;width:55px;cursor:pointer;border:2px solid transparent;background:#111;position:relative}.th:hover{border-color:#555}.th.ac{border-color:#ff2200}.th canvas{width:100%;display:block}.thn{position:absolute;bottom:2px;right:3px;font-family:"VT323",monospace;font-size:10px;color:#555}<\/style><\/head><body><h1>' + title + '<\/h1><div class="controls"><button class="btn" id="bp" onclick="pp()" disabled>◄ PREV<\/button><div class="pi" id="pi">— / —<\/div><button class="btn" id="bn" onclick="np()">NEXT ►<\/button><\/div><div class="stage"><div class="spread" id="sp"><div class="ps" id="pl"><canvas id="cl"><\/canvas><span class="pn" id="nl"><\/span><\/div><div class="spine"><\/div><div class="ps" id="pr"><canvas id="cr"><\/canvas><span class="pn" id="nr"><\/span><\/div><div class="fc" id="fe" style="display:none"><\/div><\/div><\/div><div class="ts" id="ts"><\/div><script>var P=' + pageDataJSON + ';var T=' + thumbDataJSON + ';var N=' + str(numPages) + ';var cs=0,fl=false;function dp(id,i){var c=document.getElementById(id);if(i>=N||i<0){c.style.display="none";return;}c.style.display="block";var im=new Image();im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};im.src=P[i];}function rs(si,an,dir){var li=si,ri=si+1;var ll=li<N?(li+1):"",rl=ri<N?(ri+1):"";document.getElementById("pi").textContent=(ll&&rl?(ll+" - "+rl):(ll||rl))+" / "+N;document.getElementById("bp").disabled=(cs<=0);document.getElementById("bn").disabled=(cs+2>=N);if(!an){dp("cl",li);dp("cr",ri);document.getElementById("nl").textContent=ll?"p."+ll:"";document.getElementById("nr").textContent=rl?"p."+rl:"";ua();return;}rf(dir,li,ri);}function rf(dir,nli,nri){if(fl)return;fl=true;var sp=document.getElementById("sp"),fe=document.getElementById("fe");var sw=sp.offsetWidth,sh=sp.offsetHeight;fe.style.display="block";fe.innerHTML="";fe.style.width=(sw/2)+"px";fe.style.height=sh+"px";fe.style.top="0";var ff=document.createElement("div"),fb=document.createElement("div");ff.className="ff";fb.className="fb";var ti=dir==="next"?cs+1:cs,ii=dir==="next"?nri:nli;if(dir==="next"){fe.style.right="0";fe.style.left="";fe.style.transformOrigin="left center";}else{fe.style.left="0";fe.style.right="";fe.style.transformOrigin="right center";}var fc=document.createElement("canvas");ff.appendChild(fc);if(ti<N&&ti>=0){var fi=new Image();fi.onload=function(){fc.width=fi.width;fc.height=fi.height;fc.style.width="100%";fc.getContext("2d").drawImage(fi,0,0);};fi.src=P[ti];}var bc=document.createElement("canvas");fb.appendChild(bc);if(ii<N&&ii>=0){var bi=new Image();bi.onload=function(){bc.width=bi.width;bc.height=bi.height;bc.style.width="100%";bc.getContext("2d").drawImage(bi,0,0);};bi.src=P[ii];}fe.appendChild(ff);fe.appendChild(fb);fe.style.animation=(dir==="next"?"fpf":"fnf")+" 0.55s cubic-bezier(0.645,0.045,0.355,1.000) forwards";fe.addEventListener("animationend",function h(){fe.removeEventListener("animationend",h);fe.style.display="none";fe.style.animation="";dp("cl",nli);dp("cr",nri);document.getElementById("nl").textContent=nli<N?"p."+(nli+1):"";document.getElementById("nr").textContent=nri<N?"p."+(nri+1):"";ua();fl=false;});}function np(){if(fl||cs+2>=N)return;cs+=2;rs(cs,true,"next");}function pp(){if(fl||cs<=0)return;cs-=2;if(cs<0)cs=0;rs(cs,true,"prev");}function ua(){for(var i=0;i<N;i++){var t=document.getElementById("t"+i);if(t)t.classList.toggle("ac",i===cs||i===cs+1);}var a=document.getElementById("t"+cs);if(a)a.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});}(function(){var ts=document.getElementById("ts");for(var i=0;i<N;i++){(function(idx){var t=document.createElement("div");t.className="th";t.id="t"+idx;var c=document.createElement("canvas");var im=new Image();im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};im.src=T[idx];t.appendChild(c);var n=document.createElement("div");n.className="thn";n.textContent=idx+1;t.appendChild(n);t.addEventListener("click",function(){if(fl)return;var s=idx%2===0?idx:idx-1;if(s===cs)return;var d=s>cs?"next":"prev";cs=s;rs(cs,true,d);});ts.appendChild(t);})(i);}})();document.addEventListener("keydown",function(e){if(e.key==="ArrowRight")np();if(e.key==="ArrowLeft")pp();});rs(0,false);<\/script><\/body><\/html>';
+}
+
+
+// ---- FLIPBOOK OVERLAY ----
+(function() {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  var fbPages = [], fbThumbs = [], fbTotal = 0, fbSpread = 0, fbFlipping = false, fbName = "flipbook";
+
+  // drag/drop
+  /* dz listeners handled in flipbook section below */
+
+  function fbLoad(file) {
+    fbName = file.name.replace('.pdf','');
+    fbPages=[]; fbThumbs=[];
+    document.getElementById('fb-loading').style.display='flex';
+    document.getElementById('fb-loading-text').textContent='LOADING PDF...';
+    document.getElementById('fb-loading-bar').style.width='0%';
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var arr = new Uint8Array(e.target.result);
+      pdfjsLib.getDocument({data:arr}).promise.then(function(pdf) {
+        fbTotal = pdf.numPages;
+        document.getElementById('fb-loading-text').textContent='RENDERING '+fbTotal+' PAGES...';
+        function renderPage(num) {
+          pdf.getPage(num).then(function(page) {
+            var vp = page.getViewport({scale:1.8});
+            var c = document.createElement('canvas');
+            c.width=vp.width; c.height=vp.height;
+            page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise.then(function(){
+              fbPages[num-1] = c.toDataURL('image/jpeg', 0.88);
+              var sc = 80/vp.width;
+              var tvp = page.getViewport({scale:sc});
+              var tc = document.createElement('canvas');
+              tc.width=tvp.width; tc.height=tvp.height;
+              page.render({canvasContext:tc.getContext('2d'),viewport:tvp}).promise.then(function(){
+                fbThumbs[num-1] = tc.toDataURL('image/jpeg',0.7);
+                document.getElementById('fb-loading-bar').style.width=Math.round(num/fbTotal*100)+'%';
+                document.getElementById('fb-loading-text').textContent='RENDERING... '+num+' / '+fbTotal;
+                if(num<fbTotal) renderPage(num+1); else fbFinish();
+              });
+            });
+          });
+        }
+        renderPage(1);
+      }).catch(function(err){ document.getElementById('fb-loading').style.display='none'; alert('Could not read PDF: '+err.message); });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function fbFinish() {
+    document.getElementById('fb-loading').style.display='none';
+    document.getElementById('fb-drop-screen').style.display='none';
+    document.getElementById('fb-viewer').style.display='flex';
+    fbBuildThumbs();
+    fbSpread=0;
+    fbRenderSpread(0,false);
+  }
+
+  function fbDrawPage(canvasId, idx) {
+    var c = document.getElementById(canvasId);
+    if(idx>=fbTotal||idx<0){c.style.display='none';return;}
+    c.style.display='block';
+    var im=new Image();
+    im.onload=function(){c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);};
+    im.src=fbPages[idx];
+  }
+
+  function fbRenderSpread(si, animate, dir) {
+    var li=si, ri=si+1;
+    var ll=li<fbTotal?(li+1):'', rl=ri<fbTotal?(ri+1):'';
+    document.getElementById('fb-indicator').textContent=(ll&&rl?(ll+' - '+rl):(ll||rl))+' / '+fbTotal;
+    document.getElementById('fb-btn-prev').disabled=(fbSpread<=0);
+    document.getElementById('fb-btn-next').disabled=(fbSpread+2>=fbTotal);
+    if(!animate){
+      fbDrawPage('fb-canvas-left',li); fbDrawPage('fb-canvas-right',ri);
+      document.getElementById('fb-num-left').textContent=ll?'p.'+ll:'';
+      document.getElementById('fb-num-right').textContent=rl?'p.'+rl:'';
+      fbUpdateThumbs(); return;
+    }
+    fbRunFlip(dir,li,ri);
+  }
+
+  function fbRunFlip(dir,nli,nri){
+    if(fbFlipping)return; fbFlipping=true;
+    var sp=document.getElementById('fb-spread'), fe=document.getElementById('fb-flip-el');
+    var sw=sp.offsetWidth, sh=sp.offsetHeight;
+    fe.style.display='block'; fe.innerHTML='';
+    fe.style.width=(sw/2)+'px'; fe.style.height=sh+'px'; fe.style.top='0';
+    var ff=document.createElement('div'), fb2=document.createElement('div');
+    ff.className='fb-ff'; fb2.className='fb-fb';
+    var ti=dir==='next'?fbSpread+1:fbSpread, ii=dir==='next'?nri:nli;
+    if(dir==='next'){fe.style.right='0';fe.style.left='';fe.style.transformOrigin='left center';}
+    else{fe.style.left='0';fe.style.right='';fe.style.transformOrigin='right center';}
+    var fc=document.createElement('canvas'); ff.appendChild(fc);
+    if(ti<fbTotal&&ti>=0){var fi=new Image();fi.onload=function(){fc.width=fi.width;fc.height=fi.height;fc.style.width='100%';fc.getContext('2d').drawImage(fi,0,0);};fi.src=fbPages[ti];}
+    var bc=document.createElement('canvas'); fb2.appendChild(bc);
+    if(ii<fbTotal&&ii>=0){var bi=new Image();bi.onload=function(){bc.width=bi.width;bc.height=bi.height;bc.style.width='100%';bc.getContext('2d').drawImage(bi,0,0);};bi.src=fbPages[ii];}
+    fe.appendChild(ff); fe.appendChild(fb2);
+    fe.style.animation=(dir==='next'?'fb-flip-next':'fb-flip-prev')+' 0.55s cubic-bezier(0.645,0.045,0.355,1.000) forwards';
+    fe.addEventListener('animationend',function h(){
+      fe.removeEventListener('animationend',h);
+      fe.style.display='none'; fe.style.animation='';
+      fbDrawPage('fb-canvas-left',nli); fbDrawPage('fb-canvas-right',nri);
+      document.getElementById('fb-num-left').textContent=nli<fbTotal?'p.'+(nli+1):'';
+      document.getElementById('fb-num-right').textContent=nri<fbTotal?'p.'+(nri+1):'';
+      fbUpdateThumbs(); fbFlipping=false;
+    });
+  }
+
+  window.fbNext = function(){ if(fbFlipping||fbSpread+2>=fbTotal)return; fbSpread+=2; fbRenderSpread(fbSpread,true,'next'); };
+  window.fbPrev = function(){ if(fbFlipping||fbSpread<=0)return; fbSpread-=2; if(fbSpread<0)fbSpread=0; fbRenderSpread(fbSpread,true,'prev'); };
+
+  window.fbReset = function(){
+    fbPages=[]; fbThumbs=[]; fbTotal=0; fbSpread=0; fbFlipping=false;
+    document.getElementById('fb-viewer').style.display='none';
+    document.getElementById('fb-drop-screen').style.display='flex';
+    document.getElementById('fb-file-input').value='';
+    document.getElementById('fb-thumbs').innerHTML='';
+  };
+
+  function fbBuildThumbs(){
+    var strip=document.getElementById('fb-thumbs'); strip.innerHTML='';
+    for(var i=0;i<fbTotal;i++){
+      (function(idx){
+        var t=document.createElement('div');
+        t.style.cssText='flex:0 0 auto;width:55px;cursor:pointer;border:2px solid transparent;background:#111;position:relative;transition:border-color 0.1s;';
+        t.id='fbt'+idx;
+        var c=document.createElement('canvas');
+        var im=new Image();
+        im.onload=function(){c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);};
+        im.src=fbThumbs[idx];
+        t.appendChild(c);
+        var n=document.createElement('div');
+        n.style.cssText='position:absolute;bottom:2px;right:3px;font-family:"VT323",monospace;font-size:10px;color:#555;';
+        n.textContent=idx+1; t.appendChild(n);
+        t.addEventListener('mouseover',function(){if(!t.classList.contains('fbt-active'))t.style.borderColor='#555';});
+        t.addEventListener('mouseout',function(){if(!t.classList.contains('fbt-active'))t.style.borderColor='transparent';});
+        t.addEventListener('click',function(){
+          if(fbFlipping)return;
+          var s=idx%2===0?idx:idx-1; if(s===fbSpread)return;
+          var d=s>fbSpread?'next':'prev'; fbSpread=s; fbRenderSpread(fbSpread,true,d);
+        });
+        strip.appendChild(t);
+      })(i);
+    }
+  }
+
+  function fbUpdateThumbs(){
+    for(var i=0;i<fbTotal;i++){
+      var t=document.getElementById('fbt'+i);
+      if(!t)continue;
+      var active=i===fbSpread||i===fbSpread+1;
+      t.classList.toggle('fbt-active',active);
+      t.style.borderColor=active?'var(--red)':'transparent';
+    }
+    var a=document.getElementById('fbt'+fbSpread);
+    if(a)a.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  }
+
+  window.fbDownload = function(){
+    document.getElementById('fb-loading').style.display='flex';
+    document.getElementById('fb-loading-text').textContent='BUILDING FLIPBOOK...';
+    document.getElementById('fb-loading-bar').style.width='30%';
+    setTimeout(function(){
+      var pd=JSON.stringify(fbPages), td=JSON.stringify(fbThumbs);
+      document.getElementById('fb-loading-bar').style.width='70%';
+      var html = buildStandaloneHTML(pd, td, fbTotal, fbName);
+      document.getElementById('fb-loading-bar').style.width='100%';
+      setTimeout(function(){
+        var blob=new Blob([html],{type:'text/html'});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=url; a.download=fbName+'-flipbook.html'; a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById('fb-loading').style.display='none';
+      },200);
+    },100);
+  };
+
+  // keyboard inside overlay
+  document.addEventListener('keydown',function(e){
+    if(document.getElementById('flipbook-overlay').style.display==='flex'){
+      if(e.key==='ArrowRight') window.fbNext();
+      if(e.key==='ArrowLeft')  window.fbPrev();
+      if(e.key==='Escape') document.getElementById('flipbook-overlay').style.display='none';
+    }
+  });
+
+})();
+
+</script></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+var fbPages = [], fbThumbs = [], fbTotal = 0, fbSpread = 0, fbFlipping = false, fbName = "flipbook";
+
+function toggleFlipbook() {
+  var p = document.getElementById("fb-panel");
+  if (!p) return;
+  if (p.style.display === "none" || p.style.display === "") {
+    p.style.display = "block";
+    setTimeout(function() { p.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
+  } else {
+    p.style.display = "none";
+  }
+}
+
+var dz = document.getElementById("fb-drop-zone");
+if (dz) {
+  dz.addEventListener("dragover", function(e) { e.preventDefault(); dz.classList.add("drag-over"); });
+  dz.addEventListener("dragleave", function() { dz.classList.remove("drag-over"); });
+  dz.addEventListener("drop", function(e) { e.preventDefault(); dz.classList.remove("drag-over"); var f = e.dataTransfer.files[0]; if (f && f.type === "application/pdf") fbLoad(f); });
+  dz.addEventListener("click", function() { document.getElementById("fb-file").click(); });
+}
+var fi = document.getElementById("fb-file");
+if (fi) fi.addEventListener("change", function(e) { if (e.target.files[0]) fbLoad(e.target.files[0]); });
+
+function fbLoad(file) {
+  fbName = file.name.replace(".pdf", "");
+  fbPages = []; fbThumbs = [];
+  fbShowLoading("LOADING PDF...");
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise.then(function(pdf) {
+      fbTotal = pdf.numPages;
+      fbShowLoading("RENDERING " + fbTotal + " PAGES...");
+      fbRenderPage(pdf, 1);
+    }).catch(function(err) { fbHideLoading(); alert("Could not read PDF: " + err.message); });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function fbRenderPage(pdf, num) {
+  pdf.getPage(num).then(function(page) {
+    var vp = page.getViewport({ scale: 1.8 });
+    var c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+    page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise.then(function() {
+      fbPages[num - 1] = c.toDataURL("image/jpeg", 0.88);
+      var tvp = page.getViewport({ scale: 80 / vp.width });
+      var tc = document.createElement("canvas"); tc.width = tvp.width; tc.height = tvp.height;
+      page.render({ canvasContext: tc.getContext("2d"), viewport: tvp }).promise.then(function() {
+        fbThumbs[num - 1] = tc.toDataURL("image/jpeg", 0.7);
+        var pct = Math.round((num / fbTotal) * 100);
+        document.getElementById("fb-loading-bar").style.width = pct + "%";
+        document.getElementById("fb-loading-text").textContent = "RENDERING... " + num + " / " + fbTotal;
+        if (num < fbTotal) fbRenderPage(pdf, num + 1); else { fbHideLoading(); fbStart(); }
+      });
+    });
+  });
+}
+
+function fbStart() {
+  document.getElementById("fb-drop-area").style.display = "none";
+  var v = document.getElementById("fb-viewer"); v.style.display = "flex";
+  fbBuildThumbs(); fbSpread = 0; fbRenderSpread(false);
+}
+
+function fbBuildThumbs() {
+  var strip = document.getElementById("fb-thumbs"); strip.innerHTML = "";
+  for (var i = 0; i < fbTotal; i++) {
+    (function(idx) {
+      var t = document.createElement("div"); t.className = "fb-th"; t.id = "fbt" + idx;
+      var c = document.createElement("canvas");
+      var im = new Image(); im.onload = function() { c.width=im.width; c.height=im.height; c.getContext("2d").drawImage(im,0,0); }; im.src = fbThumbs[idx];
+      t.appendChild(c);
+      var n = document.createElement("div"); n.className = "fb-thn"; n.textContent = idx + 1; t.appendChild(n);
+      t.addEventListener("click", function() { fbGoTo(idx); });
+      strip.appendChild(t);
+    })(i);
+  }
+}
+
+function fbUpdateThumbs() {
+  for (var i = 0; i < fbTotal; i++) { var t = document.getElementById("fbt"+i); if (t) t.classList.toggle("ac", i===fbSpread||i===fbSpread+1); }
+  var a = document.getElementById("fbt"+fbSpread); if (a) a.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+}
+
+function fbDrawPage(id, idx) {
+  var c = document.getElementById(id);
+  if (idx < 0 || idx >= fbTotal) { c.style.display = "none"; return; }
+  c.style.display = "block";
+  var im = new Image(); im.onload = function() { c.width=im.width; c.height=im.height; c.getContext("2d").drawImage(im,0,0); }; im.src = fbPages[idx];
+}
+
+function fbRenderSpread(animate, dir) {
+  var li=fbSpread, ri=fbSpread+1, ll=li<fbTotal?(li+1):"", rl=ri<fbTotal?(ri+1):"";
+  document.getElementById("fb-indicator").textContent = ((ll&&rl)?(ll+" - "+rl):(ll||rl)) + " / " + fbTotal;
+  document.getElementById("fb-btn-prev").disabled = (fbSpread <= 0);
+  document.getElementById("fb-btn-next").disabled = (fbSpread + 2 >= fbTotal);
+  if (!animate) { fbDrawPage("fb-cl",li); fbDrawPage("fb-cr",ri); document.getElementById("fb-nl").textContent=ll?"p."+ll:""; document.getElementById("fb-nr").textContent=rl?"p."+rl:""; fbUpdateThumbs(); return; }
+  fbRunFlip(dir, li, ri);
+}
+
+function fbRunFlip(dir, nli, nri) {
+  if (fbFlipping) return; fbFlipping = true;
+  var sp=document.getElementById("fb-spread"), fe=document.getElementById("fb-flip-el");
+  var sw=sp.offsetWidth, sh=sp.offsetHeight;
+  fe.style.display="block"; fe.innerHTML=""; fe.style.width=(sw/2)+"px"; fe.style.height=sh+"px"; fe.style.top="0";
+  var ff=document.createElement("div"); ff.className="fb-ff";
+  var fb2=document.createElement("div"); fb2.className="fb-fb";
+  var ti = dir==="next" ? fbSpread+1 : fbSpread;
+  var ii = dir==="next" ? nri : nli;
+  if (dir==="next") { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
+  else { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
+  function lf(face, pidx) { var fc=document.createElement("canvas"); face.appendChild(fc); if(pidx>=0&&pidx<fbTotal){var im=new Image();im.onload=function(){fc.width=im.width;fc.height=im.height;fc.style.width="100%";fc.getContext("2d").drawImage(im,0,0);};im.src=fbPages[pidx];} }
+  lf(ff,ti); lf(fb2,ii); fe.appendChild(ff); fe.appendChild(fb2);
+  fe.style.animation=(dir==="next"?"fb-fpf":"fb-fnf")+" 0.55s cubic-bezier(0.645,0.045,0.355,1) forwards";
+  fe.addEventListener("animationend", function h() {
+    fe.removeEventListener("animationend",h); fe.style.display="none"; fe.style.animation="";
+    fbDrawPage("fb-cl",nli); fbDrawPage("fb-cr",nri);
+    document.getElementById("fb-nl").textContent=nli<fbTotal?"p."+(nli+1):"";
+    document.getElementById("fb-nr").textContent=nri<fbTotal?"p."+(nri+1):"";
+    fbUpdateThumbs(); fbFlipping=false;
+  });
+}
+
+function fbNext() { if (fbFlipping||fbSpread+2>=fbTotal) return; fbSpread+=2; fbRenderSpread(true,"next"); }
+function fbPrev() { if (fbFlipping||fbSpread<=0) return; fbSpread-=2; if(fbSpread<0)fbSpread=0; fbRenderSpread(true,"prev"); }
+function fbGoTo(idx) { if(fbFlipping)return; var s=idx%2===0?idx:idx-1; if(s===fbSpread)return; var d=s>fbSpread?"next":"prev"; fbSpread=s; fbRenderSpread(true,d); }
+
+function fbReset() {
+  fbPages=[]; fbThumbs=[]; fbSpread=0; fbTotal=0;
+  document.getElementById("fb-viewer").style.display="none";
+  document.getElementById("fb-drop-area").style.display="flex";
+  document.getElementById("fb-file").value="";
+  document.getElementById("fb-thumbs").innerHTML="";
+}
+
+function fbShowLoading(msg) { var l=document.getElementById("fb-loading"); l.style.display="flex"; document.getElementById("fb-loading-text").textContent=msg; document.getElementById("fb-loading-bar").style.width="0%"; }
+function fbHideLoading() { document.getElementById("fb-loading").style.display="none"; }
+
+function fbDownload() {
+  fbShowLoading("BUILDING FILE...");
+  setTimeout(function() {
+    document.getElementById("fb-loading-bar").style.width="60%";
+    var pd=JSON.stringify(fbPages), td=JSON.stringify(fbThumbs), n=fbTotal, t=fbName;
+    var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>'+t+' Flipbook</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=VT323&display=swap" rel="stylesheet">'
+      +'<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:#e8e0d0;font-family:monospace;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:28px 20px 60px}'
+      +'h1{font-family:"Bebas Neue",sans-serif;font-size:clamp(28px,6vw,60px);text-shadow:3px 0 0 #ff2200;margin-bottom:22px;text-align:center;letter-spacing:2px}'
+      +'.ct{display:flex;gap:10px;align-items:center;margin-bottom:22px;flex-wrap:wrap;justify-content:center}'
+      +'.b{background:#111;color:#e8e0d0;border:1px solid #333;font-family:"VT323",monospace;font-size:17px;letter-spacing:2px;padding:7px 16px;cursor:pointer}.b:hover{background:#ff2200;border-color:#ff2200}.b:disabled{opacity:.3;cursor:default}.b:disabled:hover{background:#111;border-color:#333}'
+      +'.br{background:#ff2200;border-color:#ff2200;color:#fff}'
+      +'.pi{font-family:"VT323",monospace;font-size:17px;letter-spacing:3px;color:#444;min-width:100px;text-align:center}'
+      +'.st{perspective:2500px;width:min(780px,94vw)}.sp{display:flex;box-shadow:0 24px 70px rgba(0,0,0,.9);position:relative}'
+      +'.pg{flex:1;overflow:hidden;background:#1a1a1a;position:relative}.pg canvas{display:block;width:100%;height:auto}'
+      +'.sn{width:7px;background:linear-gradient(90deg,#000,#1a1a1a,#000);flex-shrink:0}'
+      +'.pn{position:absolute;bottom:7px;font-family:"VT323",monospace;font-size:12px;letter-spacing:2px;color:#333}.pnl{right:8px}.pnr{left:8px}'
+      +'#fe .ff,.fb2{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:#1a1a1a}.fb2{transform:rotateY(180deg)}'
+      +'@keyframes fnf{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}@keyframes fpf{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}'
+      +'.ts{display:flex;gap:5px;overflow-x:auto;padding:12px 4px 4px;width:min(780px,94vw);scrollbar-width:thin;scrollbar-color:#ff2200 #111;margin-top:14px}'
+      +'.th{flex:0 0 auto;width:52px;cursor:pointer;border:2px solid transparent;background:#111;position:relative}.th:hover{border-color:#444}.th.ac{border-color:#ff2200}'
+      +'.th canvas{width:100%;display:block}.thn{position:absolute;bottom:2px;right:3px;font-family:"VT323",monospace;font-size:10px;color:#444}'
+      +'</style></head><body>'
+      +'<h1>'+t+'</h1>'
+      +'<div class="ct"><button class="b" id="bp" onclick="pp()" disabled>&#9668; PREV</button><div class="pi" id="pi">- / -</div><button class="b" id="bn" onclick="np()">NEXT &#9658;</button><button class="b br" onclick="window.print()">PRINT</button></div>'
+      +'<div class="st"><div class="sp" id="sp"><div class="pg" id="pl"><canvas id="cl"></canvas><span class="pn pnl" id="nl"></span></div><div class="sn"></div><div class="pg" id="pr"><canvas id="cr"></canvas><span class="pn pnr" id="nr"></span></div>'
+      +'<div id="fe" style="display:none;position:absolute;top:0;transform-style:preserve-3d;pointer-events:none;z-index:10;"></div></div></div>'
+      +'<div class="ts" id="ts"></div>'
+      +'<script>var P='+pd+',T='+td+',N='+n+',cs=0,fl=false;'
+      +'function dp(id,i){var c=document.getElementById(id);if(i<0||i>=N){c.style.display="none";return;}c.style.display="block";var im=new Image();im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};im.src=P[i];}'
+      +'function rs(an,dir){var li=cs,ri=cs+1,ll=li<N?(li+1):"",rl=ri<N?(ri+1):"";document.getElementById("pi").textContent=((ll&&rl)?(ll+"-"+rl):(ll||rl))+" / "+N;document.getElementById("bp").disabled=(cs<=0);document.getElementById("bn").disabled=(cs+2>=N);if(!an){dp("cl",li);dp("cr",ri);document.getElementById("nl").textContent=ll?"p."+ll:"";document.getElementById("nr").textContent=rl?"p."+rl:"";ua();return;}rf(dir,li,ri);}'
+      +'function rf(dir,nli,nri){if(fl)return;fl=true;var sp=document.getElementById("sp"),fe=document.getElementById("fe"),sw=sp.offsetWidth,sh=sp.offsetHeight;fe.style.display="block";fe.innerHTML="";fe.style.width=(sw/2)+"px";fe.style.height=sh+"px";fe.style.top="0";var ff=document.createElement("div"),fb2=document.createElement("div");ff.className="ff";fb2.className="fb2";var ti=dir==="next"?cs+1:cs,ii=dir==="next"?nri:nli;if(dir==="next"){fe.style.right="0";fe.style.left="";fe.style.transformOrigin="left center";}else{fe.style.left="0";fe.style.right="";fe.style.transformOrigin="right center";}function lf(face,pidx){var fc=document.createElement("canvas");face.appendChild(fc);if(pidx>=0&&pidx<N){var im=new Image();im.onload=function(){fc.width=im.width;fc.height=im.height;fc.style.width="100%";fc.getContext("2d").drawImage(im,0,0);};im.src=P[pidx];}}lf(ff,ti);lf(fb2,ii);fe.appendChild(ff);fe.appendChild(fb2);fe.style.animation=(dir==="next"?"fpf":"fnf")+" 0.55s cubic-bezier(0.645,0.045,0.355,1) forwards";fe.addEventListener("animationend",function h(){fe.removeEventListener("animationend",h);fe.style.display="none";fe.style.animation="";dp("cl",nli);dp("cr",nri);document.getElementById("nl").textContent=nli<N?"p."+(nli+1):"";document.getElementById("nr").textContent=nri<N?"p."+(nri+1):"";ua();fl=false;});}'
+      +'function np(){if(fl||cs+2>=N)return;cs+=2;rs(true,"next");}function pp(){if(fl||cs<=0)return;cs-=2;if(cs<0)cs=0;rs(true,"prev");}'
+      +'function ua(){for(var i=0;i<N;i++){var t=document.getElementById("t"+i);if(t)t.classList.toggle("ac",i===cs||i===cs+1);}var a=document.getElementById("t"+cs);if(a)a.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});}'
+      +'(function(){var ts=document.getElementById("ts");for(var i=0;i<N;i++){(function(idx){var t=document.createElement("div");t.className="th";t.id="t"+idx;var c=document.createElement("canvas");var im=new Image();im.onload=function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};im.src=T[idx];t.appendChild(c);var n=document.createElement("div");n.className="thn";n.textContent=idx+1;t.appendChild(n);t.addEventListener("click",function(){if(fl)return;var s=idx%2===0?idx:idx-1;if(s===cs)return;var d=s>cs?"next":"prev";cs=s;rs(true,d);});ts.appendChild(t);})(i);}})();'
+      +'document.addEventListener("keydown",function(e){if(e.key==="ArrowRight")np();if(e.key==="ArrowLeft")pp();});'
+      +'rs(false);<\/script></body></html>';
+    document.getElementById("fb-loading-bar").style.width="100%";
+    setTimeout(function(){
+      var blob=new Blob([html],{type:"text/html"});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement("a"); a.href=url; a.download=fbName+"-flipbook.html"; a.click();
+      URL.revokeObjectURL(url); fbHideLoading();
+    },200);
+  },50);
+}
+</script>
+
+
+<!-- MUNDO BABEL ZINE OVERLAY -->
+<div id="amadis-overlay">
+  <div id="amadis-title-bar">AMADIS</div>
+  <button id="amadis-close" onclick="closeAmadisFlipbook()">&#10005; CLOSE</button>
+
+  <div class="candle-wrap left">
+    <canvas class="candle-canvas" id="amadis-candle-left" width="24" height="80"></canvas>
+  </div>
+  <div class="candle-wrap right">
+    <canvas class="candle-canvas" id="amadis-candle-right" width="24" height="80"></canvas>
+  </div>
+
+  <div id="amadis-book-area">
+    <div id="amadis-spread-wrap">
+      <div id="amadis-page-left"></div>
+      <div class="zine-spine-inner"></div>
+      <div id="amadis-page-right"></div>
+    </div>
+
+    <div class="zine-controls">
+      <button class="zine-ctrl" id="amadis-btn-prev" onclick="amadisFlip(-1)" disabled>&#9668; PREV</button>
+      <div class="zine-indicator" id="amadis-indicator">1 / 14</div>
+      <button class="zine-ctrl" id="amadis-btn-next" onclick="amadisFlip(1)">NEXT &#9658;</button>
+    </div>
+
+    <div id="amadis-thumbs"></div>
+  </div>
+</div>
+
+
+<div id="zine-overlay">
+  <div id="zine-title-bar">MUNDO BABEL</div>
+  <button id="zine-close" onclick="closeZineFlipbook()">&#10005; CLOSE</button>
+
+  <!-- pixel candles -->
+  <div class="candle-wrap left">
+    <canvas class="candle-canvas" id="candle-left" width="24" height="80"></canvas>
+  </div>
+  <div class="candle-wrap right">
+    <canvas class="candle-canvas" id="candle-right" width="24" height="80"></canvas>
+  </div>
+
+  <div id="zine-book-area">
+    <div id="zine-spread" style="perspective:2500px;">
+      <div class="zine-page-side" id="zine-pl">
+        <canvas id="zine-cl"></canvas>
+        <span class="zine-pn zine-pnl" id="zine-nl"></span>
+      </div>
+      <div class="zine-spine-inner"></div>
+      <div class="zine-page-side" id="zine-pr">
+        <canvas id="zine-cr"></canvas>
+        <span class="zine-pn zine-pnr" id="zine-nr"></span>
+      </div>
+      <div id="zine-flip-el" style="display:none;position:absolute;top:0;transform-style:preserve-3d;pointer-events:none;z-index:10;"></div>
+    </div>
+
+    <div class="zine-controls">
+      <button class="zine-ctrl" id="zine-btn-prev" onclick="zineFlip(-1)" disabled>&#9668; PREV</button>
+      <div class="zine-indicator" id="zine-indicator">1 / 14</div>
+      <button class="zine-ctrl" id="zine-btn-next" onclick="zineFlip(1)">NEXT &#9658;</button>
+    </div>
+
+    <div id="zine-thumbs"></div>
+  </div>
+</div>
+
+<script>
+// ---- MUNDO BABEL PAGE DATA ----
+var ZINE_PAGES = ["images/image06.jpg", "images/image10.jpg", "images/image11.jpg", "images/image12.jpg", "images/image13.jpg", "images/image14.jpg", "images/image15.jpg", "images/image16.jpg", "images/image17.jpg", "images/image18.jpg", "images/image19.jpg", "images/image20.jpg", "images/image10.jpg", "images/image22.jpg"];
+var zineSpread = 0;
+var zineTotalPages = ZINE_PAGES.length;
+var zineFlipping = false;
+
+function openZineFlipbook() {
+  var ov = document.getElementById("zine-overlay");
+  ov.classList.add("open");
+  document.body.style.overflow = "hidden";
+  if (!zineBuildDone) { zineBuildThumbs(); zineBuildDone = true; }
+  zineSpread = 0;
+  zineRenderSpread(false);
+  startCandles();
+}
+function closeZineFlipbook() {
+  document.getElementById("zine-overlay").classList.remove("open");
+  document.body.style.overflow = "";
+  stopCandles();
+}
+
+var zineBuildDone = false;
+
+function zineDrawPage(canvasId, idx) {
+  var c = document.getElementById(canvasId);
+  if (idx < 0 || idx >= zineTotalPages) { c.style.display = "none"; return; }
+  c.style.display = "block";
+  var im = new Image();
+  im.onload = function() { c.width = im.width; c.height = im.height; c.getContext("2d").drawImage(im,0,0); };
+  im.src = ZINE_PAGES[idx];
+}
+
+function zineRenderSpread(animate, dir) {
+  var li = zineSpread, ri = zineSpread + 1;
+  var ll = li < zineTotalPages ? (li+1) : "";
+  var rl = ri < zineTotalPages ? (ri+1) : "";
+  var ind = (ll&&rl) ? (ll+" - "+rl) : (ll||rl);
+  document.getElementById("zine-indicator").textContent = ind + " / " + zineTotalPages;
+  document.getElementById("zine-btn-prev").disabled = (zineSpread <= 0);
+  document.getElementById("zine-btn-next").disabled = (zineSpread + 2 >= zineTotalPages);
+  if (!animate) {
+    zineDrawPage("zine-cl", li); zineDrawPage("zine-cr", ri);
+    document.getElementById("zine-nl").textContent = ll ? "p."+ll : "";
+    document.getElementById("zine-nr").textContent = rl ? "p."+rl : "";
+    zineUpdateThumbs(); return;
+  }
+  zineRunFlip(dir, li, ri);
+}
+
+function zineRunFlip(dir, nli, nri) {
+  if (zineFlipping) return; zineFlipping = true;
+  var sp = document.getElementById("zine-spread");
+  var fe = document.getElementById("zine-flip-el");
+  var sw = sp.offsetWidth, sh = sp.offsetHeight;
+  fe.style.display = "block"; fe.innerHTML = "";
+  fe.style.width = (sw/2)+"px"; fe.style.height = sh+"px"; fe.style.top = "0";
+  var ff = document.createElement("div"); ff.className = "zfl-ff";
+  var fb = document.createElement("div"); fb.className = "zfl-fb";
+  var ti = dir===1 ? zineSpread+1 : zineSpread;
+  var ii = dir===1 ? nri : nli;
+  if (dir===1) { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
+  else         { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
+  function lf(face, pidx) {
+    var fc = document.createElement("canvas"); face.appendChild(fc);
+    if (pidx>=0 && pidx<zineTotalPages) {
+      var im = new Image();
+      im.onload = function() { fc.width=im.width; fc.height=im.height; fc.style.width="100%"; fc.getContext("2d").drawImage(im,0,0); };
+      im.src = ZINE_PAGES[pidx];
+    }
+  }
+  lf(ff,ti); lf(fb,ii); fe.appendChild(ff); fe.appendChild(fb);
+  fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
+  fe.addEventListener("animationend", function h() {
+    fe.removeEventListener("animationend",h);
+    fe.style.display="none"; fe.style.animation="";
+    zineDrawPage("zine-cl",nli); zineDrawPage("zine-cr",nri);
+    document.getElementById("zine-nl").textContent = nli<zineTotalPages ? "p."+(nli+1) : "";
+    document.getElementById("zine-nr").textContent = nri<zineTotalPages ? "p."+(nri+1) : "";
+    zineUpdateThumbs(); zineFlipping=false;
+  });
+}
+
+function zineFlip(dir) {
+  if (zineFlipping) return;
+  if (dir===1 && zineSpread+2>=zineTotalPages) return;
+  if (dir===-1 && zineSpread<=0) return;
+  zineSpread += dir*2; if(zineSpread<0)zineSpread=0;
+  zineRenderSpread(true, dir);
+}
+
+function zineBuildThumbs() {
+  var strip = document.getElementById("zine-thumbs"); strip.innerHTML="";
+  for (var i=0; i<zineTotalPages; i++) {
+    (function(idx){
+      var t = document.createElement("div"); t.className="zth"; t.id="zt"+idx;
+      var c = document.createElement("canvas");
+      var im = new Image();
+      im.onload = function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};
+      im.src = ZINE_PAGES[idx];
+      t.appendChild(c);
+      var n = document.createElement("div"); n.className="zth-n"; n.textContent=idx+1; t.appendChild(n);
+      t.addEventListener("click",function(){
+        if(zineFlipping)return;
+        var s=idx%2===0?idx:idx-1; if(s===zineSpread)return;
+        var d=s>zineSpread?1:-1; zineSpread=s; zineRenderSpread(true,d);
+      });
+      strip.appendChild(t);
+    })(i);
+  }
+}
+
+function zineUpdateThumbs() {
+  for(var i=0;i<zineTotalPages;i++){
+    var t=document.getElementById("zt"+i);
+    if(t) t.classList.toggle("ac", i===zineSpread||i===zineSpread+1);
+  }
+  var a=document.getElementById("zt"+zineSpread);
+  if(a) a.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+}
+
+document.addEventListener("keydown", function(e) {
+  if (!document.getElementById("zine-overlay").classList.contains("open")) return;
+  if (e.key==="ArrowRight") zineFlip(1);
+  if (e.key==="ArrowLeft")  zineFlip(-1);
+  if (e.key==="Escape") closeZineFlipbook();
+});
+
+// ---- PIXEL CANDLE ANIMATION ----
+var candleRAF = null;
+var candleTick = 0;
+
+function drawPixelCandle(ctx, tick, scale) {
+  scale = scale || 3;
+  var w = 8, h = Math.floor(80/scale);
+  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+
+  // candle body (white)
+  ctx.fillStyle = "#d4c8a0";
+  ctx.fillRect(2*scale, 10*scale, 4*scale, (h-12)*scale);
+  // wick
+  ctx.fillStyle = "#222";
+  ctx.fillRect(3*scale, 8*scale, 2*scale, 3*scale);
+
+  // flame — flickers with tick
+  var flicker = Math.sin(tick*0.18) * 0.4 + Math.cos(tick*0.31+1) * 0.3;
+  var fh = Math.round(4 + flicker*1.5);
+  var fw = 2 + (Math.abs(Math.sin(tick*0.22)) > 0.6 ? 1 : 0);
+
+  // outer flame (orange)
+  ctx.fillStyle = "rgba(255,140,0,0.9)";
+  ctx.fillRect((4-Math.floor(fw/2))*scale, (8-fh)*scale, fw*scale, fh*scale);
+  // inner flame (yellow)
+  ctx.fillStyle = "rgba(255,240,80,0.95)";
+  ctx.fillRect((4-1)*scale, (8-Math.floor(fh*0.6))*scale, 2*scale, Math.floor(fh*0.6)*scale);
+  // tip (white hot)
+  ctx.fillStyle = "rgba(255,255,220,0.8)";
+  ctx.fillRect(3*scale, (8-fh)*scale, 2*scale, scale);
+
+  // glow (ambient)
+  var grd = ctx.createRadialGradient(4*scale,7*scale,0, 4*scale,7*scale,12*scale);
+  grd.addColorStop(0,"rgba(255,180,40,"+(0.18+flicker*0.08)+")");
+  grd.addColorStop(1,"rgba(255,120,0,0)");
+  ctx.fillStyle = grd;
+  ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+}
+
+function startCandles() {
+  var cl = document.getElementById("candle-left");
+  var cr = document.getElementById("candle-right");
+  var scale = 3;
+  cl.width  = 8*scale; cl.height  = 80;
+  cr.width  = 8*scale; cr.height  = 80;
+  cl.style.width  = (8*scale)+"px"; cl.style.height = "80px";
+  cr.style.width  = (8*scale)+"px"; cr.style.height = "80px";
+  var ctxL = cl.getContext("2d");
+  var ctxR = cr.getContext("2d");
+  function loop() {
+    candleTick++;
+    drawPixelCandle(ctxL, candleTick, scale);
+    drawPixelCandle(ctxR, candleTick + 17, scale); // offset so they don't sync
+    candleRAF = requestAnimationFrame(loop);
+  }
+  if (candleRAF) cancelAnimationFrame(candleRAF);
+  loop();
+}
+function stopCandles() {
+  if (candleRAF) { cancelAnimationFrame(candleRAF); candleRAF=null; }
+}
+</script>
+
+<script>
+// ---- AMADIS PAGE DATA ----
+var AMADIS_PAGES = [
+  "images/image07.jpg",
+  "images/image24.jpg",
+  "images/image25.jpg",
+  "images/image26.jpg",
+  "images/image27.jpg",
+  "images/image28.jpg",
+  "images/image29.jpg",
+  "images/image30.jpg",
+  "images/image31.jpg",
+  "images/image32.jpg",
+  "images/image33.jpg",
+  "images/image34.jpg",
+  "images/image35.jpg",
+  "images/image36.jpg",
+];
+
+var amadisSpread = 0;
+var amDisBuildDone = false;
+var amadisTotal = AMADIS_PAGES.length;
+
+function openAmadisFlipbook() {
+  var ov = document.getElementById("amadis-overlay");
+  ov.classList.add("open");
+  document.body.style.overflow = "hidden";
+  if (!amDisBuildDone) { amDisBuildThumbs(); amDisBuildDone = true; }
+  amadisSpread = 0;
+  amadisRenderSpread(false);
+  startCandles();
+}
+function closeAmadisFlipbook() {
+  var ov = document.getElementById("amadis-overlay");
+  ov.classList.remove("open");
+  document.body.style.overflow = "";
+  stopCandles();
+}
+function amDisBuildThumbs() {
+  var tc = document.getElementById("amadis-thumbs");
+  if (!tc) return;
+  for (var i = 0; i < AMADIS_PAGES.length; i++) {
+    (function(idx) {
+      var th = document.createElement("div");
+      th.className = "zt";
+      th.id = "azt" + idx;
+      var im = document.createElement("img");
+      im.src = AMADIS_PAGES[idx];
+      im.style.cssText = "width:100%;display:block;";
+      th.appendChild(im);
+      th.addEventListener("click", function() { var s = idx%2===0?idx:idx-1; if (s===amadisSpread) return; amadisSpread=s; amadisRenderSpread(true); });
+      tc.appendChild(th);
+    })(i);
+  }
+}
+function amadisRenderSpread(animate) {
+  var pl = document.getElementById("amadis-page-left");
+  var pr = document.getElementById("amadis-page-right");
+  var pn = document.getElementById("amadis-indicator");
+  var btnPrev = document.getElementById("amadis-btn-prev");
+  var btnNext = document.getElementById("amadis-btn-next");
+  if (!pl || !pr) return;
+  var li = amadisSpread, ri = amadisSpread + 1;
+  pl.style.backgroundImage = li < AMADIS_PAGES.length ? "url(" + AMADIS_PAGES[li] + ")" : "none";
+  pr.style.backgroundImage = ri < AMADIS_PAGES.length ? "url(" + AMADIS_PAGES[ri] + ")" : "none";
+  if (ri >= AMADIS_PAGES.length) pr.style.background = "#1a1a1a";
+  if (pn) pn.textContent = (li+1) + (ri < amadisTotal ? " — " + (ri+1) : "") + " / " + amadisTotal;
+  if (btnPrev) btnPrev.disabled = (amadisSpread <= 0);
+  if (btnNext) btnNext.disabled = (amadisSpread + 2 >= amadisTotal);
+  var thumbs = document.querySelectorAll("#amadis-thumbs .zt");
+  for (var i = 0; i < thumbs.length; i++) thumbs[i].classList.toggle("zt-active", i===li || i===ri);
+  var a = document.getElementById("amadis-thumbs .zt.zt-active");
+  var active = document.querySelector("#amadis-thumbs .zt.zt-active");
+  if (active) active.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+}
+function amadisFlip(dir) {
+  var next = amadisSpread + dir * 2;
+  if (next < 0 || next >= AMADIS_PAGES.length) return;
+  amadisSpread = next;
+  amadisRenderSpread(true);
+}
+document.addEventListener("keydown", function(e) {
+  var ov = document.getElementById("amadis-overlay");
+  if (!ov || !ov.classList.contains("open")) return;
+  if (e.key === "ArrowRight") amadisFlip(1);
+  if (e.key === "ArrowLeft") amadisFlip(-1);
+  if (e.key === "Escape") closeAmadisFlipbook();
+});
+</script>
+
+
+
+<!-- PAINTING LIGHTBOX -->
+<div id="painting-lightbox">
+  <div id="lb-backdrop" onclick="closeLightbox()"></div>
+
+  <div id="lb-topbar">
+    <div id="lb-title"></div>
+    <div style="display:flex;align-items:center;">
+      <button class="lb-top-btn" id="lb-share-btn" onclick="lbShare()">&#8599; SHARE</button>
+      <button class="lb-top-btn" onclick="closeLightbox()">&#10005; CLOSE</button>
+    </div>
+  </div>
+
+  <button class="lb-arrow" id="lb-prev" onclick="lbNav(-1)">&#9668;</button>
+  <button class="lb-arrow" id="lb-next" onclick="lbNav(1)">&#9658;</button>
+
+  <div id="lb-inner">
+    <div id="lb-media-wrap">
+      <img id="lb-img" src="" alt="">
+    </div>
+    <div id="lb-caption"></div>
+    <div id="lb-counter"></div>
+    <div id="lb-dots"></div>
+  </div>
+</div>
+
+<script>
+var LB_IMGS = ["images/image01.jpg", "images/image38.jpg", "images/image39.jpg", "images/image40.jpg", "images/image41.jpg"];
+var LB_CAPTIONS = ["", "", "", "", ""];
+var lbIndex = 0;
+var lbTotal = LB_IMGS.length;
+
+var lbOpen = false;
+
+var LB_META  = { title: "UNTITLED", date: "2026", medium: "acrylic, plaster & oil pastel on canvas" };
+var LB2_META = { title: "EL HUEVO FRITO", date: "2025", medium: "acrylic & oil pastel on canvas" };
+
+function lbSetHeader(meta) {
+  document.getElementById("lb-title").innerHTML =
+    meta.title +
+    '<span style="font-family:\'Courier Prime\',monospace;font-size:13px;font-weight:normal;letter-spacing:2px;color:#aaa;margin-left:16px;">' +
+    meta.medium + ' &nbsp;&middot;&nbsp; ' + meta.date + '</span>';
+}
+function openLightbox(idx) {
+  lbActiveGallery = 1;
+  lbOpen = true;
+  lbIndex = idx;
+  lbSetHeader(LB_META);
+  var lb = document.getElementById("painting-lightbox");
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+  lbBuildDots();
+  lbShow(false);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { lb.classList.add("visible"); });
+  });
+}
+
+function closeLightbox() {
+  lbOpen = false;
+  var lb = document.getElementById("painting-lightbox");
+  lb.classList.remove("visible");
+  document.body.style.overflow = "";
+  setTimeout(function() { lb.classList.remove("open"); }, 400);
+}
+
+function lbShow(fade) {
+  var img = document.getElementById("lb-img");
+  var cap = document.getElementById("lb-caption");
+  if (fade) {
+    img.classList.add("fading"); cap.classList.add("fading");
+    setTimeout(function() {
+      img.src = LB_IMGS[lbIndex];
+      cap.textContent = LB_CAPTIONS[lbIndex];
+      img.classList.remove("fading"); cap.classList.remove("fading");
+    }, 220);
+  } else {
+    img.src = LB_IMGS[lbIndex];
+    cap.textContent = LB_CAPTIONS[lbIndex];
+  }
+  document.getElementById("lb-counter").textContent = (lbIndex+1) + " / " + lbTotal;
+  document.getElementById("lb-prev").disabled = (lbIndex === 0);
+  document.getElementById("lb-next").disabled = (lbIndex === lbTotal - 1);
+  lbUpdateDots();
+}
+
+/* lbNav defined below */
+
+function lbBuildDots() {
+  var d = document.getElementById("lb-dots"); d.innerHTML = "";
+  for (var i=0; i<lbTotal; i++) {
+    (function(idx){
+      var dot = document.createElement("div");
+      dot.className = "lb-dot" + (idx===lbIndex?" ac":"");
+      dot.id = "lbd"+idx;
+      dot.addEventListener("click", function(){ lbIndex=idx; lbShow(true); });
+      d.appendChild(dot);
+    })(i);
+  }
+}
+
+function lbUpdateDots() {
+  for (var i=0; i<lbTotal; i++) {
+    var d = document.getElementById("lbd"+i);
+    if (d) d.classList.toggle("ac", i===lbIndex);
+  }
+}
+
+function lbShare() {
+  var url = window.location.href.split("#")[0];
+  if (navigator.share) {
+    navigator.share({ title: "Untitled — " + LB_CAPTIONS[lbIndex], url: url })
+      .catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){
+      var btn = document.getElementById("lb-share-btn");
+      btn.textContent = "COPIED";
+      setTimeout(function(){ btn.textContent = "\u2197 SHARE"; }, 1800);
+    });
+  }
+}
+
+document.addEventListener("keydown", function(e) {
+  if (!document.getElementById("painting-lightbox").classList.contains("open")) return;
+  if (e.key === "ArrowRight") lbNav(1);
+  if (e.key === "ArrowLeft")  lbNav(-1);
+  if (e.key === "Escape") closeLightbox();
+});
+</script>
+
+
+<!-- SECOND PAINTING LIGHTBOX (El huevo frito) -->
+<script>
+var LB2_IMGS = ["images/image02.jpg", "images/image43.jpg", "images/image44.jpg", "images/image45.jpg"];
+var LB2_CAPTIONS = ["", "", "", ""];
+var lb2Index = 0;
+var lb2Total = LB2_IMGS.length;
+
+function openLightbox2(idx) {
+  lbActiveGallery = 2;
+  lb2Index = idx;
+  lbOpen = true;
+  lbSetHeader(LB2_META);
+  var lb = document.getElementById("painting-lightbox");
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("lb-title").textContent = "EL HUEVO FRITO";
+  lb2BuildDots();
+  lb2Show(false);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { lb.classList.add("visible"); });
+  });
+}
+
+function lb2Show(fade) {
+  var img = document.getElementById("lb-img");
+  var cap = document.getElementById("lb-caption");
+  if (fade) {
+    img.classList.add("fading"); cap.classList.add("fading");
+    setTimeout(function() {
+      img.src = LB2_IMGS[lb2Index];
+      cap.textContent = LB2_CAPTIONS[lb2Index];
+      img.classList.remove("fading"); cap.classList.remove("fading");
+    }, 220);
+  } else {
+    img.src = LB2_IMGS[lb2Index];
+    cap.textContent = LB2_CAPTIONS[lb2Index];
+  }
+  document.getElementById("lb-counter").textContent = (lb2Index+1) + " / " + lb2Total;
+  document.getElementById("lb-prev").disabled = (lb2Index === 0);
+  document.getElementById("lb-next").disabled = (lb2Index === lb2Total - 1);
+  lb2UpdateDots();
+}
+
+function lb2BuildDots() {
+  var d = document.getElementById("lb-dots"); d.innerHTML = "";
+  for (var i=0; i<lb2Total; i++) {
+    (function(idx){
+      var dot = document.createElement("div");
+      dot.className = "lb-dot" + (idx===lb2Index?" ac":"");
+      dot.id = "lbd2-"+idx;
+      dot.addEventListener("click", function(){ lb2Index=idx; lb2Show(true); });
+      d.appendChild(dot);
+    })(i);
+  }
+}
+function lb2UpdateDots() {
+  for (var i=0; i<lb2Total; i++) {
+    var d = document.getElementById("lbd2-"+i);
+    if (d) d.classList.toggle("ac", i===lb2Index);
+  }
+}
+
+// unified lbNav — replaces original, delegates by active gallery
+var lbActiveGallery = 1;  // 1 = untitled, 2 = huevo frito
+function lbNav(dir) {
+  if (lbActiveGallery === 2) {
+    var next = lb2Index + dir;
+    if (next < 0 || next >= lb2Total) return;
+    lb2Index = next;
+    lb2Show(true);
+  } else {
+    var nx = lbIndex + dir;
+    if (nx < 0 || nx >= LB_IMGS.length) return;
+    lbIndex = nx;
+    lbShow(true);
+  }
+}
+</script>
+
+
+
+<!-- ARTICLE 3 MODAL -->
+<div id="article3-modal">
+  <button id="article3-close" onclick="closeArticle3()">&#10005; CLOSE</button>
+  <div id="article3-inner">
+    <div class="art-h1">I saw the fall,<br>and didn&#8217;t look away</div>
+    <div class="art-meta">ASIER MORAIS MANRIQUE &nbsp;&middot;&nbsp; 04 &middot; 08 &middot; 2025 &nbsp;&middot;&nbsp; ESSAY</div>
+    <div class="art-body">
+      <p>The other day I saw a seagull killing and eating a pigeon at the entry of my building. Thousands (probably hundreds) of feathers scattered across the parking, as if a pyjama rave party just took place. Since I&#8217;m quite biased by the small folk and mythology drawing series I&#8217;m working on at the moment, the myth of Icarus came to my mind immediately when I saw the crime scene, and I started tracing a scheme in my mind with the present subjects as the main protagonists of the tale, that would later lead me to a decent reimagination of the tale. A bountiful weekend.</p>
+
+      <figure class="art-figure"><img src="images/image46.jpg" alt="Not the actual seagull, but probably related" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Not the actual seagull, but probably related</em></figcaption></figure>
+      <h3 class="art-subhead">Connecting the dots</h3>
+
+      <p>It was my assumption that the deceased pigeon (Icarus) probably came too close to a piece of succulent food found on the floor, and the seagull (Apollo, probably also interested in the food) understood this approach as a sign of vanity from this lesser being, hence punishing it with the death penalty. Other pigeons (Daedalus) were watching the savage scene, which (even although I completely despise all kinds of birds) felt a bit sad and made me wonder if they were friends or even relatives.</p>
+
+      <p>While riding my bike to the park to sit under the sun in a performative drawing session, I started thinking about the myth. It feels like a missed opportunity from ancient Greeks that the end of the story is just Icarus falling into the sea, never to be seen again. Not much drama in that compared with the fates of other pals like Medusa, Tantalus or Sisyphus &#8212; no punishment for his boldness, no eternal torment, no sass from the gods&#8230; just *splash*</p>
+
+      <p>Justice had to be made&#8230;</p>
+
+      <p>So, 3,000 years after the story was first told, I, just as Icarus did, just as the deceased pigeon did, wielded my vanity and embarked on an ego trip to try to come up with a much, much better ending that no one asked for nor thought was missing, just to put a cherry on top of this immortal tale that didn&#8217;t miss any cherry at all.</p>
+
+      <figure class="art-figure"><img src="images/image47.jpg" alt="Me, chilling in the park last Sunday, sketching while prone" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Me, chilling in the park last Sunday, sketching while prone</em></figcaption></figure>
+      <h3 class="art-subhead">The secret post-credit cutscene revealed</h3>
+
+      <p>Instead of plunging into the ocean and vanishing, &#205;caro slips through a narrow gap in the rocks and crashes into a hidden pit. With all his bones broken, there he lies, forever, aging and without any chance of escaping, eating mussels and algae, drinking rain drops from the stalagmites, with the reflection of the sun shining on the surface of the dark waters as his only company, reminding him of his hubris. The End.</p>
+
+      <figure class="art-figure"><img src="images/image48.jpg" alt="" style="width:100%;display:block;margin:0 auto;"></figure>
+      <h3 class="art-subhead">The inspiration</h3>
+
+      <p>This drawing was conceived as a counterpoint to Herbert James Draper&#8217;s depiction of Icarus in his painting: <em>The Lament for Icarus</em>. A warm color palette with lots of bronze tones was selected, giving everything a sunlit appearance, almost like a tribute from Apollo to mourn the poor fool. The horizon is distant, and the composition has a depth that lends it life. Icarus stands as a formidable figure; despite falling an unknown height, he retains all his feathers and a strong physique, with a broad chest and a magnificent posture, surrounded by a gathering of Nereids mourning him. He lived as a human, defied the gods, and yet his defiance is met with divinity and adoration here, portraying Icarus as a god rather than just a drooling pulp of meat, bones and feathers. He is not dead, he is just sleeping.</p>
+
+      <figure class="art-figure"><img src="images/image49.jpg" alt="The Lament for Icarus by Herbert James Draper" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>The Lament for Icarus by Herbert James Draper</em></figcaption></figure>
+      <h3 class="art-subhead">The antagonic twist</h3>
+
+      <p>In my drawing, none of that is present (even although it is black and white, I want you to envision a dark teal green atmosphere) enveloped and immersed in shadows, with no horizon and no group of nereids, just a sharp rock wall in the background, leaving no escape. Alone, unworshipped. The wings have a scant amount of feathers, resembling a seagull engulfed in the swell of an oil-slicked wave, with a decrepit, old, and saggy body, a pitiable posture that conveys humiliation instead of tragedy, a mere echo of his former glory. He challenged the gods and they buried him alive with no other way out than drowning himself in the reflection of the sun, Apollo&#8217;s final mockery of a boy who once reached for his crown.</p>
+
+      <figure class="art-figure"><img src="images/image50.jpg" alt="My drawing — pencil on paper, 2025" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>My drawing — pencil on paper, 2025</em></figcaption></figure>
+      <h3 class="art-subhead">Reality check</h3>
+
+      <p>The drawing is so disproportionate (I don&#8217;t know why I keep drawing lying down and without my glasses) the wings look just like plastic combs and the rocks like very small mountains, it would have been wise to check some references for that, the dude also kind of looks as if he was placing an enema somewhere, and he looks too well-fed for someone who is sustained only by seafood. I didn&#8217;t put much thought into it, but it&#8217;s meant to be sold in a flea market for a low price, so I suppose it&#8217;s more than sufficient for someone&#8217;s grandma&#8217;s night table.</p>
+
+      <h3 class="art-subhead">On a positive note</h3>
+
+      <p>An old woman gave this frame to me for free after bargaining with her at a store next to my house (Remember, when bargaining, try to always wear clothes with holes and oil stains in trinket stores to set proper expectations with the seller) the golden border kinda symbolizes everything I tried to antagonize, but I think it&#8217;s more than enough for the &#8220;Icarus &#8212; mobbed pigeon&#8221; mental fart I just had.</p>
+
+      <figure class="art-figure"><img src="images/image51.jpg" alt="" style="width:100%;display:block;margin:0 auto;"></figure>
+      <a href="https://medium.com/@asier.ux.ui/i-saw-the-fall-and-didnt-look-away-fed75f16e757" target="_blank" class="art-link">READ ON MEDIUM &#8599;</a>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE 2 MODAL -->
+<div id="article2-modal">
+  <button id="article2-close" onclick="closeArticle2()">&#10005; CLOSE</button>
+  <div id="article2-inner">
+    <div class="art-h1">Of movies, yogurt&#x2011;men<br>and a Roman empress</div>
+    <div class="art-meta">ASIER MORAIS MANRIQUE &nbsp;&middot;&nbsp; 30 &middot; 06 &middot; 2025 &nbsp;&middot;&nbsp; ESSAY</div>
+    <div class="art-body">
+      <p>I was waiting for the traffic light to turn green when I saw this poster on the bus stop shelter, a new animated movie by Pixar, <em>Elio</em>. I hadn't heard of it before, which is strange considering these types of films usually have gargantuan marketing budgets. I took a photo so I wouldn't forget to look it up later and continued on with my dominical stroll, these glutes don't get worked out by staring at posters on the street.</p>
+
+      <figure class="art-figure"><img src="images/image52.jpg" alt="Elio movie poster at a Copenhagen bus stop, Disney·Pixar, i biografen fra 19. juni" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Elio movie poster at a Copenhagen bus stop, Disney·Pixar, i biografen fra 19. juni</em></figcaption></figure>
+      <p><em>(It's always so embarrassing to take pictures in public of things as common and dull as a poster of a kids' movie at a bus stop, I could really feel on the back of my neck the eyes of the other cyclist, dreaming about seizing me because of how lame I looked)</em></p>
+
+      <h3 class="art-subhead">A movie as plain as plain yogurt (Allegedly)</h3>
+
+      <p>Turns out the movie was released this week, and apparently it's been a total box office disaster, according to some sources, the worst opening weekend for any Pixar release.</p>
+
+      <p>&#8220;Boring,&#8221; &#8220;simple,&#8221; &#8220;unoriginal,&#8221; &#8220;I've seen this before.&#8221;</p>
+
+      <p>I could see it coming, the poster reminded me of a yogurt commercial for kids that used to air in Spain a few years ago. And there's nothing more boring, simple, unoriginal, and overdone than plain yogurt.</p>
+
+      <p><em>(Side note for the designers: If this ended up being one of those projects where creative direction was hijacked by marketing execs and brand strategists, I see you. Not all dull posters are your fault, sometimes plain yogurt comes from the top.)</em></p>
+
+      <figure class="art-figure"><img src="images/image53.jpg" alt="Equipo Actimel — Actimel squad, first Avengers I ever met, got my hairstyle because of the girl" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Equipo Actimel — Actimel squad, first Avengers I ever met, got my hairstyle because of the girl</em></figcaption></figure>
+      <h3 class="art-subhead">Rated W for woke</h3>
+
+      <p>After going through some reviews, I finally stumbled upon a niche audience that actually enjoyed the film. They gave <em>Elio</em> a whopping 85 out of 100. Superior in every aspect to <em>Poor Things</em> by Yorgos Lanthimos, which only managed a measly 49 out of 100. The name of the website? <a href="https://worthitorwoke.com/elio/" target="_blank" class="art-link"><em>Worth It or Woke</em></a>.</p>
+
+      <figure class="art-figure"><img src="images/image54.jpg" alt="Worth It or Woke — Elio review: 85/100, Woke-O-Meter at 90%" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Worth It or Woke — Elio review: 85/100, Woke-O-Meter at 90%</em></figcaption></figure>
+      <p>It's a site that publishes reviews mainly analyzing whether the ideological line of the film aligns with what these people consider morally correct. I believe the image they use as a mascot gives you a clear idea of who they deem morally incorrect.</p>
+
+      <figure class="art-figure"><img src="images/image55.jpg" alt="Worth It or Woke website mascot — “If it ain’t woke don’t miss it”" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Worth It or Woke website mascot — “If it ain’t woke don’t miss it”</em></figcaption></figure>
+      <p>It's interesting to see how what is the worst Pixar movie in years, by most accounts, delights all those prudes who are content with protagonists who aren't women, queer, or any kind of minority. They're satisfied with their biannual dose of <em>Mission: Impossible</em> or <em>Fast and Furious</em>, films they probably enjoy while munching on a tub of utterly meaningless plain yogurt.</p>
+
+      <h3 class="art-subhead">From pixels to petals</h3>
+
+      <p>After mulling it over, I headed to the bodega to work on my series of folkloric drawings and reclaim, in the form of a beer (3 in fact), all the calories I had so recklessly burned on that stupid bike ride.</p>
+
+      <p>While thinking about <em>Elio</em> and its legion of yogurt-in-the-veins fans, the figure of Heliogabalus came to mind.</p>
+
+      <figure class="art-figure"><img src="images/image56.jpg" alt="Bust of Heliogabalus" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Bust of Heliogabalus</em></figcaption></figure>
+      <p>In today's social context, it is by far the most interesting Roman ruler. Of Syrian origins, this person reigned for nearly three years, from 218 to 222 CE, the year of their assassination at the age of 18, and is considered by many historians the first documented trans person in history.</p>
+
+      <p>The writings about their figure in classical historical literature are nothing short of atrocious. Aside from Nero, Caligula, and Commodus, she is often considered one of the vilest leaders of the glorified Roman Empire (<em>Not Augustus or Trajanus, killing hundreds of thousands is a clear thumbs up as long as you don't make your horse a consul</em>).</p>
+
+      <p>The reasons behind this judgment are far removed from the usual criteria &#8212; military disasters, economic recessions, or tyranny are rarely mentioned. In fact, their criticisms reflect an ancient echo of many reviews we find today on sites like <em>Worth it or woke</em>.</p>
+
+      <h3 class="art-subhead">What actions earnt Heliogabalus such mistreatment by historians?</h3>
+
+      <p>Wore makeup, shaved her legs, used wigs, had male lovers, enjoyed being addressed as &#8220;lady&#8221; instead of &#8220;lord,&#8221; invested large amounts of money in medics to perform gender-affirming surgery, adopted the name of an ancient Syrian deity and syncretized it with Roman culture, created a women's senate to serve her as personal advisors, and last but not least, allegedly murdered a bunch of her guests at a party by dropping tons of rose petals on them until they choked to death.</p>
+
+      <p>These are some of the reasons why, on June 26, 223, she and her mother Julia Soaemias were murdered by members of the Praetorian Guard.</p>
+
+      <blockquote class="art-blockquote">
+        <p>&#8220;He tried to flee and might have hidden himself somewhere, but he was discovered and killed at the age of eighteen. His mother, who clung to him tightly, died with him. Their heads were cut off, and their naked bodies were dragged through the streets of the city. The body of his mother was discarded somewhere, while his was thrown into the river.&#8221;</p>
+        <small>&#8212; Cassius Dio. (1927). <em>Roman History</em> (E. Cary, Trans., Book 80, Fr. 20). Harvard University Press.</small>
+      </blockquote>
+
+      <h3 class="art-subhead">My personal tribute on the 1,803rd anniversary of her murder</h3>
+
+      <p>After reflecting on this person and the unfair treatment they have received from history, I decided to pay tribute to their figure in my series of folkloric and mythological drawings.</p>
+
+      <p>For inspiration, I took her most famous anecdote, considered a story that historians spread shortly after their death to cement their image as the embodiment of moral decline. Yet, in this work by Lawrence Alma-Tadema, I perceive very little of that decay.</p>
+
+      <figure class="art-figure"><img src="images/image57.jpg" alt="The Roses of Heliogabalus by Lawrence Alma-Tadema" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>The Roses of Heliogabalus by Lawrence Alma-Tadema</em></figcaption></figure>
+      <p>I really like many of the pictoric moments this work offers, however, reading about the empress's final moments, the treatment she's received from historians, that crappy review site full of rubes, and losing my bike keys after those four (or was it 5?) damned beers, led me down a very different, and much more pessimistic path.</p>
+
+      <figure class="art-figure"><img src="images/image58.jpg" alt="My drawing: Heliogabalus and Charon on the Stygian lagoon (Quality and light is poor in the photo here, check out my socials to see a better image)" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>My drawing: Heliogabalus and Charon on the Stygian lagoon (Quality and light is poor in the photo here, check out my socials to see a better image)</em></figcaption></figure>
+      <h3 class="art-subhead">Some beer-brewed thoughts I wrote while working on this image.</h3>
+
+      <p>A boat, in the middle of the Stygian lagoon. No land in sight. The water is restless, but there is no current&#8230;</p>
+
+      <p>&#8230;a difficult case for the judges of Hades, when deciding which of the three currents of the river should follow someone who spent their life swimming against the current itself.</p>
+
+      <p>Heliogabalus lies in the boat on a bed of rose petals.<br>
+      The ferryman, her only company, glances at her sideways with a certain air of sorrow. He doesn't know where to take her, he doesn't understand her sins either.</p>
+
+      <p>Once death is transcended, her body metamorphoses into everything she sought to become in life.<br>
+      Life &#8212; her life. Death &#8212; her (<em>written by:</em>) story.</p>
+
+      <p>To rewrite the canonical history, to blur her sexes, to let her ambiguities emerge through charcoal, to give her a new body.</p>
+
+      <p>The oar/scythe: a blade, a bias, a rule, a morality &#8212; whose only way forward is slicing things in two, or more.</p>
+
+      <p>She plays with it indifferently, resting her fingers on the edge without fear of cutting one.</p>
+
+      <p>In her other hand rests her head, with a gaze both inquisitorial and indifferent.<br>
+      She looks at us, on the other side.<br>
+      She knows that a thousand years later, we'll suture her wounds, paint on her eyeliner, celebrate her wigs.</p>
+
+      <p><strong>Born far too late to do anything about it but just in time to draw something about it.</strong></p>
+
+      <a href="https://medium.com/@asier.ux.ui/of-movies-yogurt-men-and-a-roman-empress-a18720996017" target="_blank" class="art-link">READ ON MEDIUM &#8599;</a>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE MODAL -->
+<div id="article-modal">
+  <button id="article-close" onclick="closeArticle()">&#10005; CLOSE</button>
+  <div id="article-inner">
+    <div class="art-h1">Cartographies<br>of Chlorine</div>
+    <div class="art-meta">ASIER MORAIS MANRIQUE &nbsp;·&nbsp; 03 · 08 · 2025 &nbsp;·&nbsp; ESSAY</div>
+    <div class="art-body">
+      <p>I recently finished (almost) a zine about swimming pools, which I titled, quite aptly in my opinion, POOLS. It's a series of 13 or 15 drawings of scenes in swimming pools, and just as many pages with vague thoughts about, yes, you guessed it, pools. More specifically, moments I often experience with a certain kind of people that always evoke me very positive thoughts.</p>
+      <figure class="art-figure"><img src="images/image59.jpg" alt="Cover of the zine" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Cover of the zine</em></figcaption></figure>
+
+      <p>The stages are generic and don't exist in the real world, although some are inspired by the pools I frequent. The influence of the "liminal pools" aesthetic found in many internet forums is also evident — rooms entirely plagued with thousands of immaculate tiles, as sterile as they are they still convey a very distinct feeling of calmness that I find very pleasant.</p>
+      <figure class="art-figure"><img src="images/image60.jpg" alt="Dream Pools series created by 3D artist Jared Pike" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Dream Pools series created by 3D artist Jared Pike</em></figcaption></figure>
+
+      <p>I usually go several times a week to the public pools and saunas in the city (Copenhagen), and I often try to memorize those bodies I find most interesting, to later desacralize them in one of my unscrupulous drawings.</p>
+      <p>Almost always, the bodies that leave the strongest imprint on my memory, the protagonists of these wee zine, are those of very old people (and I mean the very old, 85+). I observe them in silence and with a certain reverence, not with morbid curiosity or voyeurism, but with a cartographic interest in the map traced by the folds and wrinkles that weave through their wiry bodies and the memories they evoke in me when I try to unravel them.</p>
+      <figure class="art-figure"><img src="images/image61.jpg" alt="Barbara Lusi, Brigitta 2" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Barbara Lusi, Brigitta 2</em></figcaption></figure>
+
+      <p>I always approach the drawings from the wrinkle, the pronounced joints of the bones (I rarely start them anywhere other than the knees), and the way the skin spills over the skeleton. It's like drawing a chair with clothes on, or a coat rack — there are no muscles or tendons holding the tissue to defy gravity, everything crumbles and precipitates towards the floor.</p>
+      <figure class="art-figure"><img src="images/image62.jpg" alt="Memory of a man who was about to dive in (Obviously not the actual pool)" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Memory of a man who was about to dive in (Obviously not the actual pool)</em></figcaption></figure>
+
+      <p>It's hard to see these kind of bodies in this way in the media, particularly women's (unless you are watching an ethnographic documentary). In films, television, or magazines, these type of bodies are disregarded most of the time, they don't produce "appetite," are unpleasant to the eye and unfit to be desired, old and good to go — replaced by younger versions, flawless, shiny, glossy, smooth as a polychromed virgin ready for a procession night and polished as any of the thousands of tiles that lay the bottom of the pool.</p>
+      <figure class="art-figure"><img src="images/image63.jpg" alt="Polychromed statue Maria Santisima de las Angustias by Jose Rodriguez y Fernandez-Andes at Sevilla" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Polychromed statue Maria Santisima de las Angustias by Jose Rodriguez y Fernandez-Andes at Sevilla</em></figcaption></figure>
+
+      <blockquote>"The beauty of what is polished and smoothed, of what is soft and sleek, leaves no trace. It does not tell a story."<br><small style="font-size:13px;letter-spacing:1px;">— Byung-Chul Han, <em>Saving Beauty</em></small></blockquote>
+      <figure class="art-figure"><img src="images/image64.jpg" alt="Memory of a woman that was sitting on the ledge (Inverted for dramatic purposes)" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Memory of a woman that was sitting on the ledge (Inverted for dramatic purposes)</em></figcaption></figure>
+
+      <p>Hence the shock I often feel when seeing such worn bodies, fully and without censorship. The public modesty with which elderly people usually carry themselves in the shared spaces of big cities takes a hiatus in the peculiar collective intimacy produced by semi-nudity in public pools and saunas.</p>
+      <p>The shock is collective, the contrast in shape and rhythm between these people and the rest is evident for everyone — there is no one, in or out of the water, who doesn't eventually turn their head in the direction of these people.</p>
+      <p>Like someone spotting a deer among the trees of a forest from the car, or a shooting star when the skies are clear, it does feel without a question like a sight to gaze upon.</p>
+      <figure class="art-figure"><img src="images/image65.jpg" alt="Memory of a man that was wisely checking the temperature of the water before making any commitments" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Memory of a man that was wisely checking the temperature of the water before making any commitments</em></figcaption></figure>
+
+      <p>A few times I've witnessed adults who glance sideways and almost afraid at them like a Roman general at the slave whispering <em>memento mori</em> in his ear. Most adults look on more tenderly (perhaps remembering someone) while getting lost in the mazes that all the twists and whirls of skin create with every move.</p>
+      <p>There are small children who stop their chatter like a cow that stops grazing to watch a train pass — they don't know what they are looking at, but they do know that it is something that should be looked.</p>
+      <p>And there are babies, just now taking their first splashes, who fix their gaze without reverence or shame for as long as they see fit, which shouldn't be surprising, since they tend to do that with everyone all the time.</p>
+      <figure class="art-figure"><img src="images/image66.jpg" alt="Memory of a man going to the showers, he did not have an oxygen bottle with him but it was added so he can breathe within the drawing" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Memory of a man going to the showers, he did not have an oxygen bottle with him but it was added so he can breathe within the drawing</em></figcaption></figure>
+
+      <p>We watch them undress with difficulty in the changing rooms, how they soap their bodies, how they take their time going down the stairs, and how they peacefully swim breaststroke, as much as they can, as far as they get.</p>
+      <p>Then they get out, they dry off. If you look at them, they smile. If you don't look, they smile anyway. And then they leave. And we all stay, crawling vigorously through the lanes, nailing dives from the springboard, working on our summer bodies, blending in with the tiles.</p>
+
+      <figure class="art-figure"><img src="images/image67.jpg" alt="Memory of a woman that was (I hope) worshipping herself in the still waters of the baby pool. Pose based on 'The crouching woman' by Rodin" style="width:100%;display:block;margin:0 auto;"><figcaption class="art-figcaption"><em>Memory of a woman that was (I hope) worshipping herself in the still waters of the baby pool. Pose based on 'The crouching woman' by Rodin</em></figcaption></figure>
+      <a href="https://medium.com/@asier.ux.ui/cartographies-of-chlorine-db9d0fb22081" target="_blank" class="art-link">READ ON MEDIUM &#8599;</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var DRW_IMGS = [
+  { src: "images/image03.jpg", cap: "" },
+  { src: "images/image69.jpg", cap: "" },
+  { src: "images/image70.jpg", cap: "" },
+  { src: "images/image71.jpg", cap: "" },
+  { src: "images/image72.jpg", cap: "" },
+  { src: "images/image73.jpg", cap: "" },
+];
+
+
+var drwIndex = 0;
+function openDrawingLB(i) {
+  drwIndex = i;
+  document.getElementById('drw-lb').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  drwShow();
+}
+function closeDrwLB() {
+  document.getElementById('drw-lb').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function drwShow() {
+  var img = document.getElementById('drw-img');
+  var cap = document.getElementById('drw-caption');
+  var dots = document.getElementById('drw-dots');
+  img.src = DRW_IMGS[drwIndex].src;
+  cap.textContent = DRW_IMGS[drwIndex].cap || '';
+  dots.innerHTML = '';
+  for (var i = 0; i < DRW_IMGS.length; i++) {
+    var d = document.createElement('div');
+    d.style.cssText = 'width:8px;height:8px;border-radius:50%;background:' + (i === drwIndex ? '#fff' : '#555') + ';cursor:pointer;';
+    (function(idx){ d.onclick = function(){ drwIndex = idx; drwShow(); }; })(i);
+    dots.appendChild(d);
+  }
+}
+function drwNav(dir) {
+  drwIndex = (drwIndex + dir + DRW_IMGS.length) % DRW_IMGS.length;
+  drwShow();
+}
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('drw-lb');
+  if (!lb || lb.style.display === 'none') return;
+  if (e.key === 'ArrowLeft') drwNav(-1);
+  if (e.key === 'ArrowRight') drwNav(1);
+  if (e.key === 'Escape') closeDrwLB();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('drw2-lb') && document.getElementById('drw2-lb').style.display === 'flex') {
+    if (e.key === 'Escape') { document.getElementById('drw2-lb').style.display = 'none'; document.body.style.overflow = ''; }
+  }
+});
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('drw3-lb') && document.getElementById('drw3-lb').style.display === 'flex') {
+    if (e.key === 'Escape') { document.getElementById('drw3-lb').style.display = 'none'; document.body.style.overflow = ''; }
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('drw4-lb') && document.getElementById('drw4-lb').style.display === 'flex') {
+    if (e.key === 'Escape') { document.getElementById('drw4-lb').style.display = 'none'; document.body.style.overflow = ''; }
+  }
+});
+
+function openArticle3() {
+  var m = document.getElementById("article3-modal");
+  m.classList.add("open"); document.body.style.overflow = "hidden";
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ m.classList.add("visible"); }); });
+}
+function closeArticle3() {
+  var m = document.getElementById("article3-modal");
+  m.classList.remove("visible");
+  setTimeout(function(){ m.classList.remove("open"); document.body.style.overflow = ""; }, 300);
+}
+var MergedLB_IMGS = [
+  { src: "images/image04.jpg", cap: "" },
+  { src: "images/image75.jpg", cap: "" },
+  { src: "images/image76.jpg", cap: "" }
+];
+var SimpLB_IMGS = [
+  { src: "images/image05.jpg", cap: "" },
+  { src: "images/image78.jpg", cap: "" },
+  { src: "images/image79.jpg", cap: "" },
+  { src: "images/image80.jpg", cap: "" },
+  { src: "images/image81.jpg", cap: "" },
+  { src: "images/image82.jpg", cap: "" },
+  { src: "images/image83.jpg", cap: "" },
+  { src: "images/image84.jpg", cap: "" },
+  { src: "images/image85.jpg", cap: "" },
+  { src: "images/image86.jpg", cap: "" },
+  { src: "images/image87.jpg", cap: "" },
+  { src: "images/image88.jpg", cap: "" },
+  { src: "images/image89.jpg", cap: "" },
+  { src: "images/image90.jpg", cap: "" },
+  { src: "images/image91.jpg", cap: "" },
+  { src: "images/image92.jpg", cap: "" },
+  { src: "images/image93.jpg", cap: "" }
+];
+
+var MergedLBIndex = 0;
+function openMergedLB(i) {
+  MergedLBIndex = i || 0;
+  document.getElementById('MergedLB').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  MergedLBShow();
+}
+function closeMergedLB() {
+  document.getElementById('MergedLB').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function MergedLBShow() {
+  var img = document.getElementById('MergedLB-img');
+  var dots = document.getElementById('MergedLB-dots');
+  img.src = MergedLB_IMGS[MergedLBIndex].src;
+  dots.innerHTML = '';
+  for (var i = 0; i < MergedLB_IMGS.length; i++) {
+    var d = document.createElement('div');
+    d.style.cssText = 'width:8px;height:8px;border-radius:50%;background:' + (i === MergedLBIndex ? '#fff' : '#555') + ';cursor:pointer;';
+    (function(idx){ d.onclick = function(){ MergedLBIndex=idx; MergedLBShow(); }; })(i);
+    dots.appendChild(d);
+  }
+}
+function MergedLBNav(dir) {
+  MergedLBIndex = (MergedLBIndex + dir + MergedLB_IMGS.length) % MergedLB_IMGS.length;
+  MergedLBShow();
+}
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('MergedLB') || document.getElementById('MergedLB').style.display === 'none') return;
+  if (e.key === 'ArrowLeft') MergedLBNav(-1);
+  if (e.key === 'ArrowRight') MergedLBNav(1);
+  if (e.key === 'Escape') closeMergedLB();
+});
+
+var SimpLBIndex = 0;
+function openSimpLB(i) {
+  SimpLBIndex = i || 0;
+  document.getElementById('SimpLB').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  SimpLBShow();
+}
+function closeSimpLB() {
+  document.getElementById('SimpLB').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function SimpLBShow() {
+  var img = document.getElementById('SimpLB-img');
+  var dots = document.getElementById('SimpLB-dots');
+  img.src = SimpLB_IMGS[SimpLBIndex].src;
+  dots.innerHTML = '';
+  for (var i = 0; i < SimpLB_IMGS.length; i++) {
+    var d = document.createElement('div');
+    d.style.cssText = 'width:8px;height:8px;border-radius:50%;background:' + (i === SimpLBIndex ? '#fff' : '#555') + ';cursor:pointer;';
+    (function(idx){ d.onclick = function(){ SimpLBIndex=idx; SimpLBShow(); }; })(i);
+    dots.appendChild(d);
+  }
+}
+function SimpLBNav(dir) {
+  SimpLBIndex = (SimpLBIndex + dir + SimpLB_IMGS.length) % SimpLB_IMGS.length;
+  SimpLBShow();
+}
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('SimpLB') || document.getElementById('SimpLB').style.display === 'none') return;
+  if (e.key === 'ArrowLeft') SimpLBNav(-1);
+  if (e.key === 'ArrowRight') SimpLBNav(1);
+  if (e.key === 'Escape') closeSimpLB();
+});
+
+function openArticle2() {
+  var m = document.getElementById("article2-modal");
+  m.classList.add("open");
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ m.classList.add("visible"); }); });
+}
+function closeArticle2() {
+  var m = document.getElementById("article2-modal");
+  m.classList.remove("visible");
+  setTimeout(function(){
+    m.classList.remove("open");
+    document.body.style.overflow = "";
+  }, 300);
+}
+function openArticle() {
+  var m = document.getElementById("article-modal");
+  m.classList.add("open");
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ m.classList.add("visible"); }); });
+}
+function closeArticle() {
+  var m = document.getElementById("article-modal");
+  m.classList.remove("visible");
+  setTimeout(function(){
+    m.classList.remove("open");
+    document.body.style.overflow = "";
+  }, 300);
+}
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape") {
+    var m = document.getElementById("article-modal");
+    if (m && m.classList.contains("open")) closeArticle();
+    var m2 = document.getElementById("article2-modal");
+    if (m2 && m2.classList.contains("open")) closeArticle2();
+    var m3 = document.getElementById("article3-modal");
+    if (m3 && m3.classList.contains("open")) closeArticle3();
+  }
+});
+</script>
+
+<!-- DRAWING LIGHTBOX -->
+<div id="drw-lb" style="display:none;position:fixed;inset:0;z-index:60000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;">
+  <button onclick="closeDrwLB()" style="position:fixed;top:16px;right:20px;background:transparent;color:#888;border:1px solid #555;font-family:'VT323',monospace;font-size:15px;letter-spacing:2px;padding:5px 14px;cursor:pointer;z-index:60001;">&#10005; CLOSE</button>
+  <button onclick="drwNav(-1)" style="position:fixed;left:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8592;</button>
+  <button onclick="drwNav(1)"  style="position:fixed;right:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8594;</button>
+  <div id="drw-media-wrap" style="max-width:90vw;max-height:85vh;display:flex;align-items:center;justify-content:center;">
+    <img id="drw-img" src="" alt="" style="max-width:90vw;max-height:85vh;object-fit:contain;display:block;">
+  </div>
+  <div id="drw-caption" style="color:#aaa;font-family:'VT323',monospace;font-size:18px;letter-spacing:2px;margin-top:12px;text-align:center;"></div>
+  <div id="drw-dots" style="display:flex;gap:8px;margin-top:10px;"></div>
+</div><div id="drw4-lb" style="display:none;position:fixed;inset:0;z-index:60000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;">
+  <button onclick="document.getElementById('drw4-lb').style.display='none';document.body.style.overflow='';" style="position:fixed;top:16px;right:20px;background:transparent;color:#888;border:1px solid #555;font-family:'VT323',monospace;font-size:15px;letter-spacing:2px;padding:5px 14px;cursor:pointer;z-index:60001;">&#10005; CLOSE</button>
+  <div style="text-align:center;margin-bottom:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#e8e0d0;">UNTITLED</div>
+    <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#888;letter-spacing:2px;margin-top:4px;">mixed media on paper &nbsp;&middot;&nbsp; 2025</div>
+  </div>
+  <div style="max-width:90vw;max-height:78vh;display:flex;align-items:center;justify-content:center;">
+    <img src="images/image76.jpg" style="max-width:90vw;max-height:78vh;object-fit:contain;display:block;">
+  </div>
+  <div id="drw4-lb-cap" style="color:#888;font-family:'Courier Prime',monospace;font-size:13px;letter-spacing:1px;margin-top:14px;text-align:center;max-width:600px;padding:0 20px;"></div>
+</div>
+<div id="MergedLB" style="display:none;position:fixed;inset:0;z-index:60000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;">
+  <button onclick="closeMergedLB()" style="position:fixed;top:16px;right:20px;background:transparent;color:#888;border:1px solid #555;font-family:'VT323',monospace;font-size:15px;letter-spacing:2px;padding:5px 14px;cursor:pointer;z-index:60001;">&#10005; CLOSE</button>
+  <button onclick="MergedLBNav(-1)" style="position:fixed;left:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8592;</button>
+  <button onclick="MergedLBNav(1)"  style="position:fixed;right:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8594;</button>
+  <div style="text-align:center;margin-bottom:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#e8e0d0;">UNTITLED</div>
+    <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#888;letter-spacing:2px;margin-top:4px;">mixed media on paper &nbsp;&middot;&nbsp; 2024–2025</div>
+  </div>
+  <div id="MergedLB-media" style="max-width:90vw;max-height:78vh;display:flex;align-items:center;justify-content:center;">
+    <img id="MergedLB-img" src="" style="max-width:90vw;max-height:78vh;object-fit:contain;display:block;">
+  </div>
+  <div id="MergedLB-dots" style="display:flex;gap:8px;margin-top:12px;"></div>
+  <div id="MergedLB-cap" style="color:#888;font-family:'Courier Prime',monospace;font-size:13px;letter-spacing:1px;margin-top:8px;text-align:center;max-width:600px;padding:0 20px;"></div>
+</div>
+<div id="SimpLB" style="display:none;position:fixed;inset:0;z-index:60000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;">
+  <button onclick="closeSimpLB()" style="position:fixed;top:16px;right:20px;background:transparent;color:#888;border:1px solid #555;font-family:'VT323',monospace;font-size:15px;letter-spacing:2px;padding:5px 14px;cursor:pointer;z-index:60001;">&#10005; CLOSE</button>
+  <button onclick="SimpLBNav(-1)" style="position:fixed;left:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8592;</button>
+  <button onclick="SimpLBNav(1)"  style="position:fixed;right:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:60001;">&#8594;</button>
+  <div style="text-align:center;margin-bottom:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#e8e0d0;">SIMPSON STICKERS</div>
+    <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#888;letter-spacing:2px;margin-top:4px;">ink & digital colour on paper &nbsp;&middot;&nbsp;&middot;&nbsp; 2020–ONGOING</div>
+  </div>
+  <div id="SimpLB-media" style="max-width:90vw;max-height:78vh;display:flex;align-items:center;justify-content:center;">
+    <img id="SimpLB-img" src="" style="max-width:90vw;max-height:78vh;object-fit:contain;display:block;">
+  </div>
+  <div id="SimpLB-dots" style="display:flex;gap:8px;margin-top:12px;"></div>
+  <div id="SimpLB-cap" style="color:#888;font-family:'Courier Prime',monospace;font-size:13px;letter-spacing:1px;margin-top:8px;text-align:center;max-width:600px;padding:0 20px;"></div>
+</div>
+</body>
+</html>
