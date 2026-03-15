@@ -921,11 +921,12 @@
   .zine-pnl { right: 8px; }
   .zine-pnr { left: 8px; }
 
-  #zine-flip-el .zfl-ff, #zine-flip-el .zfl-fb {
+  #zine-flip-el .zfl-ff, #zine-flip-el .zfl-fb,
+  #amadis-flip-el .zfl-ff, #amadis-flip-el .zfl-fb {
     position: absolute; inset: 0;
     backface-visibility: hidden; overflow: hidden; background: #111;
   }
-  #zine-flip-el .zfl-fb { transform: rotateY(180deg); }
+  #zine-flip-el .zfl-fb, #amadis-flip-el .zfl-fb { transform: rotateY(180deg); }
   @keyframes zfl-next { 0%{transform:rotateY(0)} 100%{transform:rotateY(180deg)} }
   @keyframes zfl-prev { 0%{transform:rotateY(0)} 100%{transform:rotateY(-180deg)} }
 
@@ -1418,77 +1419,76 @@
   }
   #article3-modal.open #article3-close { display: block; }
   
-  /* Amadis zine overlay — mirrors zine-overlay */
-
-  #amadis-book-area {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 20px; padding-top: 60px;
-  }
-  #amadis-spread-wrap {
-    display: flex; position: relative;
-    box-shadow: 0 0 80px rgba(0,0,0,0.9);
-  }
-  #amadis-page-left, #amadis-page-right {
-    width: min(42vw, 380px);
-    height: min(59vw, 537px);
-    background: #1a1a1a;
-    background-size: cover;
-    background-position: center;
-    transition: opacity 0.2s;
-  }
-  #amadis-thumbs {
-    display: flex; gap: 6px; overflow-x: auto;
-    max-width: min(88vw, 800px); padding: 4px;
-    scrollbar-width: thin; scrollbar-color: #555 #111;
-  }
-  #amadis-thumbs .zt {
-    flex: 0 0 44px; cursor: pointer;
-    border: 2px solid transparent; opacity: 0.5; transition: opacity 0.15s;
-  }
-  #amadis-thumbs .zt:hover { opacity: 0.8; }
-  #amadis-thumbs .zt.zt-active { border-color: var(--red); opacity: 1; }
-  #amadis-thumbs .zt img { width: 100%; display: block; }
-  #amadis-btn-prev, #amadis-btn-next { }
+  /* Amadis zine overlay — mirrors zine-overlay exactly */
 
   #amadis-overlay {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 50000;
-    background: #0a0a0a;
+    background: #0a0604;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
   #amadis-overlay.open { display: flex; }
+
+  #amadis-book-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0 10px;
+    position: relative;
+    z-index: 50002;
+  }
+
+  #amadis-spread {
+    display: flex;
+    position: relative;
+    box-shadow: 0 0 80px rgba(0,0,0,0.95), 0 0 200px rgba(180,120,40,0.08);
+    max-width: min(820px, 92vw);
+    width: 100%;
+    animation: flicker-glow 3s ease-in-out infinite;
+  }
+
   #amadis-title-bar {
     position: fixed;
     top: 16px; left: 50%; transform: translateX(-50%);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px; letter-spacing: 6px;
-    color: var(--paper); z-index: 50002;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(16px,3vw,26px);
+    letter-spacing: 6px;
+    color: #4a3a25;
+    z-index: 50003;
     pointer-events: none;
+    text-shadow: 0 0 20px rgba(180,120,40,0.3);
   }
+
   #amadis-close {
-    position: fixed; top: 16px; right: 20px;
-    background: transparent; color: #8a7a5a;
-    border: 1px solid #555;
-    font-family: 'VT323', monospace; font-size: 15px;
-    letter-spacing: 2px; padding: 5px 14px;
-    cursor: pointer; z-index: 50002;
+    position: fixed;
+    top: 16px; right: 20px;
+    background: transparent;
+    color: #4a3a25;
+    border: 1px solid #2a2215;
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    z-index: 50003;
+    transition: all 0.1s;
   }
   #amadis-close:hover { color: var(--paper); border-color: #8a7a5a; }
-  #amadis-spread {
-    display: flex; position: relative;
-    box-shadow: 0 0 80px rgba(0,0,0,0.9);
+
+  #amadis-thumbs {
+    display: flex; gap: 4px; overflow-x: auto;
+    padding: 10px 4px 2px; max-width: min(820px,92vw);
+    scrollbar-width: thin; scrollbar-color: #3a2a10 #0a0604;
+    margin-top: 10px;
   }
-  #amadis-page-left, #amadis-page-right {
-    width: min(42vw, 380px);
-    height: min(59vw, 537px);
-    background: #1a1a1a;
-    background-size: cover;
-    background-position: center;
-  }
+  #amadis-thumbs::-webkit-scrollbar { height: 2px; }
+  #amadis-thumbs::-webkit-scrollbar-thumb { background: #3a2a10; }
   </style>
 </head>
 <body>
@@ -2400,10 +2400,17 @@ function fbDownload() {
   </div>
 
   <div id="amadis-book-area">
-    <div id="amadis-spread-wrap">
-      <div id="amadis-page-left"></div>
+    <div id="amadis-spread" style="perspective:2500px;">
+      <div class="zine-page-side" id="amadis-pl">
+        <canvas id="amadis-cl"></canvas>
+        <span class="zine-pn zine-pnl" id="amadis-nl"></span>
+      </div>
       <div class="zine-spine-inner"></div>
-      <div id="amadis-page-right"></div>
+      <div class="zine-page-side" id="amadis-pr">
+        <canvas id="amadis-cr"></canvas>
+        <span class="zine-pn zine-pnr" id="amadis-nr"></span>
+      </div>
+      <div id="amadis-flip-el" style="display:none;position:absolute;top:0;transform-style:preserve-3d;pointer-events:none;z-index:10;"></div>
     </div>
 
     <div class="zine-controls">
@@ -2666,6 +2673,34 @@ var AMADIS_PAGES = [
 var amadisSpread = 0;
 var amDisBuildDone = false;
 var amadisTotal = AMADIS_PAGES.length;
+var amadisFlipping = false;
+
+// ---- AMADIS CANDLES (separate from Mundo Babel candles) ----
+var amadisCandleRAF = null;
+var amadisCandleTick = 0;
+
+function startAmadisCandles() {
+  var cl = document.getElementById("amadis-candle-left");
+  var cr = document.getElementById("amadis-candle-right");
+  var scale = 3;
+  cl.width  = 8*scale; cl.height  = 80;
+  cr.width  = 8*scale; cr.height  = 80;
+  cl.style.width  = (8*scale)+"px"; cl.style.height = "80px";
+  cr.style.width  = (8*scale)+"px"; cr.style.height = "80px";
+  var ctxL = cl.getContext("2d");
+  var ctxR = cr.getContext("2d");
+  function loop() {
+    amadisCandleTick++;
+    drawPixelCandle(ctxL, amadisCandleTick, scale);
+    drawPixelCandle(ctxR, amadisCandleTick + 23, scale);
+    amadisCandleRAF = requestAnimationFrame(loop);
+  }
+  if (amadisCandleRAF) cancelAnimationFrame(amadisCandleRAF);
+  loop();
+}
+function stopAmadisCandles() {
+  if (amadisCandleRAF) { cancelAnimationFrame(amadisCandleRAF); amadisCandleRAF = null; }
+}
 
 function openAmadisFlipbook() {
   var ov = document.getElementById("amadis-overlay");
@@ -2674,62 +2709,116 @@ function openAmadisFlipbook() {
   if (!amDisBuildDone) { amDisBuildThumbs(); amDisBuildDone = true; }
   amadisSpread = 0;
   amadisRenderSpread(false);
-  startCandles();
+  startAmadisCandles();
 }
 function closeAmadisFlipbook() {
-  var ov = document.getElementById("amadis-overlay");
-  ov.classList.remove("open");
+  document.getElementById("amadis-overlay").classList.remove("open");
   document.body.style.overflow = "";
-  stopCandles();
+  stopAmadisCandles();
 }
+
+function amadisDrawPage(canvasId, idx) {
+  var c = document.getElementById(canvasId);
+  if (idx < 0 || idx >= amadisTotal) { c.style.display = "none"; return; }
+  c.style.display = "block";
+  var im = new Image();
+  im.onload = function() { c.width = im.width; c.height = im.height; c.getContext("2d").drawImage(im, 0, 0); };
+  im.src = AMADIS_PAGES[idx];
+}
+
+function amadisRenderSpread(animate, dir) {
+  var li = amadisSpread, ri = amadisSpread + 1;
+  var ll = li < amadisTotal ? (li+1) : "";
+  var rl = ri < amadisTotal ? (ri+1) : "";
+  var ind = (ll&&rl) ? (ll+" - "+rl) : (ll||rl);
+  document.getElementById("amadis-indicator").textContent = ind + " / " + amadisTotal;
+  document.getElementById("amadis-btn-prev").disabled = (amadisSpread <= 0);
+  document.getElementById("amadis-btn-next").disabled = (amadisSpread + 2 >= amadisTotal);
+  if (!animate) {
+    amadisDrawPage("amadis-cl", li); amadisDrawPage("amadis-cr", ri);
+    document.getElementById("amadis-nl").textContent = ll ? "p."+ll : "";
+    document.getElementById("amadis-nr").textContent = rl ? "p."+rl : "";
+    amadisUpdateThumbs(); return;
+  }
+  amadisRunFlip(dir, li, ri);
+}
+
+function amadisRunFlip(dir, nli, nri) {
+  if (amadisFlipping) return; amadisFlipping = true;
+  var sp = document.getElementById("amadis-spread");
+  var fe = document.getElementById("amadis-flip-el");
+  var sw = sp.offsetWidth, sh = sp.offsetHeight;
+  fe.style.display = "block"; fe.innerHTML = "";
+  fe.style.width = (sw/2)+"px"; fe.style.height = sh+"px"; fe.style.top = "0";
+  var ff = document.createElement("div"); ff.className = "zfl-ff";
+  var fb = document.createElement("div"); fb.className = "zfl-fb";
+  var ti = dir===1 ? amadisSpread+1 : amadisSpread;
+  var ii = dir===1 ? nri : nli;
+  if (dir===1) { fe.style.right="0"; fe.style.left=""; fe.style.transformOrigin="left center"; }
+  else         { fe.style.left="0"; fe.style.right=""; fe.style.transformOrigin="right center"; }
+  function lf(face, pidx) {
+    var fc = document.createElement("canvas"); face.appendChild(fc);
+    if (pidx>=0 && pidx<amadisTotal) {
+      var im = new Image();
+      im.onload = function() { fc.width=im.width; fc.height=im.height; fc.style.width="100%"; fc.getContext("2d").drawImage(im,0,0); };
+      im.src = AMADIS_PAGES[pidx];
+    }
+  }
+  lf(ff,ti); lf(fb,ii); fe.appendChild(ff); fe.appendChild(fb);
+  fe.style.animation = (dir===1?"zfl-next":"zfl-prev") + " 0.6s cubic-bezier(0.645,0.045,0.355,1) forwards";
+  fe.addEventListener("animationend", function h() {
+    fe.removeEventListener("animationend",h);
+    fe.style.display="none"; fe.style.animation="";
+    amadisDrawPage("amadis-cl",nli); amadisDrawPage("amadis-cr",nri);
+    document.getElementById("amadis-nl").textContent = nli<amadisTotal ? "p."+(nli+1) : "";
+    document.getElementById("amadis-nr").textContent = nri<amadisTotal ? "p."+(nri+1) : "";
+    amadisUpdateThumbs(); amadisFlipping=false;
+  });
+}
+
+function amadisFlip(dir) {
+  if (amadisFlipping) return;
+  if (dir===1 && amadisSpread+2>=amadisTotal) return;
+  if (dir===-1 && amadisSpread<=0) return;
+  amadisSpread += dir*2; if(amadisSpread<0) amadisSpread=0;
+  amadisRenderSpread(true, dir);
+}
+
 function amDisBuildThumbs() {
-  var tc = document.getElementById("amadis-thumbs");
-  if (!tc) return;
-  for (var i = 0; i < AMADIS_PAGES.length; i++) {
-    (function(idx) {
-      var th = document.createElement("div");
-      th.className = "zt";
-      th.id = "azt" + idx;
-      var im = document.createElement("img");
+  var strip = document.getElementById("amadis-thumbs"); strip.innerHTML="";
+  for (var i=0; i<amadisTotal; i++) {
+    (function(idx){
+      var t = document.createElement("div"); t.className="zth"; t.id="azt"+idx;
+      var c = document.createElement("canvas");
+      var im = new Image();
+      im.onload = function(){c.width=im.width;c.height=im.height;c.getContext("2d").drawImage(im,0,0);};
       im.src = AMADIS_PAGES[idx];
-      im.style.cssText = "width:100%;display:block;";
-      th.appendChild(im);
-      th.addEventListener("click", function() { var s = idx%2===0?idx:idx-1; if (s===amadisSpread) return; amadisSpread=s; amadisRenderSpread(true); });
-      tc.appendChild(th);
+      t.appendChild(c);
+      var n = document.createElement("div"); n.className="zth-n"; n.textContent=idx+1; t.appendChild(n);
+      t.addEventListener("click",function(){
+        if(amadisFlipping)return;
+        var s=idx%2===0?idx:idx-1; if(s===amadisSpread)return;
+        var d=s>amadisSpread?1:-1; amadisSpread=s; amadisRenderSpread(true,d);
+      });
+      strip.appendChild(t);
     })(i);
   }
 }
-function amadisRenderSpread(animate) {
-  var pl = document.getElementById("amadis-page-left");
-  var pr = document.getElementById("amadis-page-right");
-  var pn = document.getElementById("amadis-indicator");
-  var btnPrev = document.getElementById("amadis-btn-prev");
-  var btnNext = document.getElementById("amadis-btn-next");
-  if (!pl || !pr) return;
-  var li = amadisSpread, ri = amadisSpread + 1;
-  pl.style.backgroundImage = li < AMADIS_PAGES.length ? "url(" + AMADIS_PAGES[li] + ")" : "none";
-  pr.style.backgroundImage = ri < AMADIS_PAGES.length ? "url(" + AMADIS_PAGES[ri] + ")" : "none";
-  if (ri >= AMADIS_PAGES.length) pr.style.background = "#1a1a1a";
-  if (pn) pn.textContent = (li+1) + (ri < amadisTotal ? " — " + (ri+1) : "") + " / " + amadisTotal;
-  if (btnPrev) btnPrev.disabled = (amadisSpread <= 0);
-  if (btnNext) btnNext.disabled = (amadisSpread + 2 >= amadisTotal);
-  var thumbs = document.querySelectorAll("#amadis-thumbs .zt");
-  for (var i = 0; i < thumbs.length; i++) thumbs[i].classList.toggle("zt-active", i===li || i===ri);
-  var a = document.getElementById("amadis-thumbs .zt.zt-active");
-  var active = document.querySelector("#amadis-thumbs .zt.zt-active");
-  if (active) active.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+
+function amadisUpdateThumbs() {
+  for(var i=0;i<amadisTotal;i++){
+    var t=document.getElementById("azt"+i);
+    if(t) t.classList.toggle("ac", i===amadisSpread||i===amadisSpread+1);
+  }
+  var a=document.getElementById("azt"+amadisSpread);
+  if(a) a.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
 }
-function amadisFlip(dir) {
-  var next = amadisSpread + dir * 2;
-  if (next < 0 || next >= AMADIS_PAGES.length) return;
-  amadisSpread = next;
-  amadisRenderSpread(true);
-}
+
 document.addEventListener("keydown", function(e) {
   var ov = document.getElementById("amadis-overlay");
   if (!ov || !ov.classList.contains("open")) return;
   if (e.key === "ArrowRight") amadisFlip(1);
-  if (e.key === "ArrowLeft") amadisFlip(-1);
+  if (e.key === "ArrowLeft")  amadisFlip(-1);
   if (e.key === "Escape") closeAmadisFlipbook();
 });
 </script>
